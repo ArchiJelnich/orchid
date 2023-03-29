@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".my_plants_screen">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="My garden" />
+
+        <Button
+            android:id="@+id/bt_nav_new"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New plant" />
+
+        <Button
+            android:id="@+id/bt_nav_current"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current plant" />
+
+    </LinearLayout>
+
+</FrameLayout>
