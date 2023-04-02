@@ -2,4 +2,30 @@
     <string name="app_name">Orchard</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="main_header">Watering for today</string>
+    <string name="my_garden">My garden</string>
+    <string name="settings_header">Settings</string>
+    <string name="ya_default">Sorry, API is not working</string>
+
+    <string name="st_notify">Enable notification</string>
+    <string name="st_time">Notification time</string>
+    <string name="st_every_hour">Reminder every hour</string>
+    <string name="st_town">Town</string>
+    <string name="st_def_time">14:00</string>
+    <string name="st_def_town">Yerevan</string>
+    <string name="st_version">Version 0.0
+        https://github.com/ArchiJelnich/orchid</string>
+
+    <string name="cur_def_name">Rose</string>
+    <string name="cur_def_type">Your best flower</string>
+    <string name="cur_def_watering_text">Next watering: today!</string>
+
+    <string name="cur_def_watering">Everyday</string>
+
+    <string name="new_header">Your new plant</string>
+
+    <string name="new_name">Please type name</string>
+    <string name="new_note">Please type note</string>
+
 </resources>

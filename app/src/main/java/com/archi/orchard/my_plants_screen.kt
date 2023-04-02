@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.navigation.fragment.findNavController
 
 // TODO: Rename parameter arguments, choose names that match
@@ -42,11 +43,11 @@ class my_plants_screen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val bt_new = view.findViewById<View>(R.id.bt_nav_new) as Button
-        val bt_current = view.findViewById<View>(R.id.bt_nav_current) as Button
+        val bt_new = view.findViewById<View>(R.id.bt_nav_new) as TextView
+        //val bt_current = view.findViewById<View>(R.id.bt_nav_current) as TextView
 
         bt_new.setOnClickListener { onClick(bt_new) }
-        bt_current.setOnClickListener { onClick(bt_current) }
+        //bt_current.setOnClickListener { onClick(bt_current) }
     }
 
     private fun onClick(v: View) {
@@ -60,12 +61,13 @@ class my_plants_screen : Fragment() {
 
             }
 
-            R.id.bt_nav_current -> {
+           /* R.id.bt_nav_current -> {
                 //Toast.makeText(activity, "Go to garden", Toast.LENGTH_SHORT).show()
 
                 findNavController().navigate(R.id.action_my_plants_screen_to_current_plant_screen)
 
             }
+             */
         }
     }
 

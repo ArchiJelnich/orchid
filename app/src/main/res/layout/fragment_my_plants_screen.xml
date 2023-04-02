@@ -1,33 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".my_plants_screen">
+    android:background="@color/green_back"
+    android:orientation="vertical"
+    android:weightSum="100"
+    tools:context=".main_screen">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:background="@drawable/rounded_screen"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="95"
         android:orientation="vertical" >
 
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_screen"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal" >
+
         <TextView
+            android:layout_weight="7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="My garden" />
+            style="@style/header_text"
+            android:background="@drawable/rounded_head"
+            android:gravity="center"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:text="@string/my_garden" />
 
-        <Button
-            android:id="@+id/bt_nav_new"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New plant" />
+            <TextView
+                android:layout_weight="1"
+                android:id="@+id/bt_nav_new"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:background="@drawable/rounded_green"
+                android:textColor="#FFFFFF"
+                android:textSize="36sp"
+                android:text="+"/>
 
-        <Button
-            android:id="@+id/bt_nav_current"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Current plant" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
 
     </LinearLayout>
 
-</FrameLayout>
+</LinearLayout>

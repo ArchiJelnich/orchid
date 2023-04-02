@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.navigation.findNavController
 import com.archi.orchard.databinding.ActivityMainBinding
 import android.content.Intent
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
@@ -61,8 +63,8 @@ class main_screen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val bt_settings = view.findViewById<View>(R.id.bt_nav_settings) as Button
-        val bt_garden = view.findViewById<View>(R.id.bt_nav_garden) as Button
+        val bt_settings = view.findViewById<View>(R.id.bt_nav_settings) as ImageView
+        val bt_garden = view.findViewById<View>(R.id.bt_nav_garden) as TextView
 
         bt_settings.setOnClickListener { onClick(bt_settings) }
         bt_garden.setOnClickListener { onClick(bt_garden) }
