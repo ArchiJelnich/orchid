@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="main_header">Полив на сегодня</string>
+    <string name="my_garden">Мой сад</string>
+    <string name="settings_header">Настройки</string>
+    <string name="ya_default">Извините, API не работает</string>
+
+    <string name="st_notify">Enable notification</string>
+    <string name="st_time">Notification time</string>
+    <string name="st_every_hour">Напоминать каждый час</string>
+    <string name="st_town">Город</string>
+    <string name="st_def_town">Ереван</string>
+    <string name="st_version">Версия 0.0
+        https://github.com/ArchiJelnich/orchid</string>
+
+    <string name="cur_def_name">Роза</string>
+    <string name="cur_def_type">Ваш лучший цветок</string>
+    <string name="cur_def_watering_text">Следующий полив: сегодня!</string>
+
+    <string name="cur_def_watering">Каждый день</string>
+
+    <string name="new_header">Ваше новое растение</string>
+
+    <string name="new_name">Пожалуйста, задайте имя</string>
+    <string name="new_note">Пожалуйста, задайте описание</string>
+
+    <string name="set_language">Язык</string>
+
+    <string-array name="language_array">
+        <item>Русский</item>
+        <item>Английский</item>
+    </string-array>
+</resources>

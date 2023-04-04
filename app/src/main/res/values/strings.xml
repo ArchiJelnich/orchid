@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Orchard</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name" translatable="false">Orchard</string>
+
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
 
     <string name="main_header">Watering for today</string>
     <string name="my_garden">My garden</string>
@@ -12,7 +12,7 @@
     <string name="st_time">Notification time</string>
     <string name="st_every_hour">Reminder every hour</string>
     <string name="st_town">Town</string>
-    <string name="st_def_time">14:00</string>
+    <string name="st_def_time" translatable="false">14:00</string>
     <string name="st_def_town">Yerevan</string>
     <string name="st_version">Version 0.0
         https://github.com/ArchiJelnich/orchid</string>
@@ -28,4 +28,13 @@
     <string name="new_name">Please type name</string>
     <string name="new_note">Please type note</string>
 
+    <string name="set_language">Language</string>
+
+    <string-array name="language_array">
+        <item>Russian</item>
+        <item>English</item>
+    </string-array>
+
 </resources>
+
+

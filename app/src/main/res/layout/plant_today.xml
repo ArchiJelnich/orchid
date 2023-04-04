@@ -25,19 +25,19 @@
             android:background="@drawable/rounded_green"
             android:textColor="#FFFFFF"
             android:textSize="36sp"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:text="+"/>
         <TextView
             android:layout_weight="1"
-            android:layout_width="40dp"
+            android:layout_width="55dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:background="@drawable/rounded_red"
+            android:background="@drawable/rounded_yellow"
             android:textColor="#FFFFFF"
-            android:textSize="36sp"
+            android:textSize="20sp"
             android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
-            android:text="-"/>
+            android:layout_marginStart="10dp"
+            android:text="Hide"/>
 
         <TextView
             android:layout_weight="7"

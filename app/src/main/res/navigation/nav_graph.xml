@@ -11,11 +11,11 @@
         android:label="fragment_main_screen"
         tools:layout="@layout/fragment_main_screen" >
         <action
-            android:id="@+id/action_main_screen_to_settings_screen"
-            app:destination="@id/settings_screen" />
-        <action
             android:id="@+id/action_main_screen_to_my_plants_screen"
             app:destination="@id/my_plants_screen" />
+        <action
+            android:id="@+id/action_main_screen_to_settings_screen"
+            app:destination="@id/settingActivity" />
     </fragment>
     <fragment
         android:id="@+id/my_plants_screen"
@@ -39,9 +39,8 @@
         android:name="com.archi.orchard.current_plant_screen"
         android:label="fragment_current_plant_screen"
         tools:layout="@layout/fragment_current_plant_screen" />
-    <fragment
-        android:id="@+id/settings_screen"
-        android:name="com.archi.orchard.settings_screen"
-        android:label="fragment_settings_screen"
-        tools:layout="@layout/fragment_settings_screen" />
+    <activity
+        android:id="@+id/settingActivity"
+        android:name="com.archi.orchard.SettingActivity"
+        android:label="SettingActivity" />
 </navigation>
