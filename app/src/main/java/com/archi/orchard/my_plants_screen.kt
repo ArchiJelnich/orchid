@@ -53,7 +53,7 @@ class my_plants_screen : Fragment() {
         val names = gardenDao.listOfNames().toList()
         val notes = gardenDao.listOfNotes().toList()
         val watering_from_db = gardenDao.listOfWateringTypes().toList()
-
+        val nextdays = gardenDao.listOfNextDays().toList()
 
 
 
@@ -68,7 +68,7 @@ class my_plants_screen : Fragment() {
         rv_plants.layoutManager = LinearLayoutManager(context)
 
 
-        rv_plants.adapter = CustomRecyclerAdapter(names, notes, watering_from_db)
+        rv_plants.adapter = CustomRecyclerAdapter(names, notes, watering_from_db, nextdays)
 
 
 

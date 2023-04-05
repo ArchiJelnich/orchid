@@ -7,13 +7,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class CustomRecyclerAdapter(private val names: List<String>, private val notes: List<String>, private val watering_from_db: List<Int>) : RecyclerView
+class CustomRecyclerAdapter(private val names: List<String>, private val notes: List<String>, private val watering_from_db: List<Int>, private val nextdays: List<String>) : RecyclerView
 .Adapter<CustomRecyclerAdapter.MyViewPlantsHolder>() {
 
     class MyViewPlantsHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tv_name: TextView = itemView.findViewById(R.id.tv_name)
         val tv_note: TextView = itemView.findViewById(R.id.tv_note)
         val tv_watering: TextView = itemView.findViewById(R.id.tv_watering)
+        val tv_date: TextView = itemView.findViewById(R.id.tv_date)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewPlantsHolder {
@@ -34,7 +35,7 @@ class CustomRecyclerAdapter(private val names: List<String>, private val notes: 
 
         var wateringArray = holder.itemView.resources.getStringArray(R.array.watering_types)
 
-
+        holder.tv_date.text = nextdays[position]
 
 
 

@@ -2,6 +2,7 @@ package com.archi.orchard
 
 import androidx.room.*
 
+
 @Entity(tableName="garden")
 public class Plant() {
     @PrimaryKey(autoGenerate = true) var id: Int = 0
@@ -10,6 +11,7 @@ public class Plant() {
     @ColumnInfo(name = "imagepath") var imagepath: String = ""
     @ColumnInfo(name = "nextdate") var nextdate: String = ""
     @ColumnInfo(name = "watering") var watering: Int = 0
+
 
     constructor(name: String, note: String, imagepath: String, nextdate: String, watering: Int ): this() {
 

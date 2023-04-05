@@ -1,5 +1,6 @@
 package com.archi.orchard
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.navigation.fragment.findNavController
@@ -113,6 +115,7 @@ class new_plants_screen : Fragment() {
 
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun onClick(v: View, watering_position: Int = 0) {
         when (v.id) {
             R.id.tv_add -> {
@@ -124,16 +127,16 @@ class new_plants_screen : Fragment() {
 
                 val re = Regex("[^a-zA-Z0-9А-Яа-я ]")
 
-
-
-
                 var plant_name = re.replace(tv_name.text.toString(), "").take(15)
                 var plant_note = re.replace(tv_note.text.toString(), "").take(15)
 
 
                 val db = Room.databaseBuilder(requireContext(), AppDatabase::class.java, "garden").allowMainThreadQueries().build()
                 val gardenDao = db.gardenDao()
-                val newPlant = Plant(plant_name, plant_note, "Placeholder_image", "Placeholder_date", watering_position)
+
+                var new_date = recalc(watering_position)
+
+                val newPlant = Plant(plant_name, plant_note, "Placeholder_image", new_date, watering_position)
                 gardenDao.insertAll(newPlant)
 
                 findNavController().navigate(R.id.action_new_plants_screen_to_my_plants_screen)

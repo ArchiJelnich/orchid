@@ -31,5 +31,8 @@ interface GardenDao {
     @Query("SELECT watering FROM garden")
     fun listOfWateringTypes(): Array<Int>
 
+    @Query("SELECT nextdate FROM garden")
+    fun listOfNextDays(): Array<String>
+
 
 }
