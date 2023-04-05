@@ -21,13 +21,25 @@
 
     <string name="new_header">Ваше новое растение</string>
 
-    <string name="new_name">Пожалуйста, задайте имя</string>
-    <string name="new_note">Пожалуйста, задайте описание</string>
+    <string name="new_name">Новое имя</string>
+    <string name="new_note">Заметка</string>
 
     <string name="set_language">Язык</string>
+
+    <string name="new_add"> Добавить </string>
 
     <string-array name="language_array">
         <item>Русский</item>
         <item>Английский</item>
     </string-array>
+
+    <string-array name="watering_types">
+        <item>Каждый день</item>
+        <item>Каждые 2 дня</item>
+        <item>Каждые 3 дня</item>
+        <item>Каждую субботу</item>
+        <item>Каждое воскресенье</item>
+        <item>По воскресеньям, раз в две недели</item>
+    </string-array>
+
 </resources>

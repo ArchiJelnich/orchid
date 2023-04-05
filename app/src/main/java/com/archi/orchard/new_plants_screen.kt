@@ -1,10 +1,18 @@
 package com.archi.orchard
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.*
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
+import androidx.navigation.fragment.findNavController
+import androidx.room.Room
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -35,7 +43,119 @@ class new_plants_screen : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_new_plants_screen, container, false)
+
+
+
+
+
+
+
+
+
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // add image
+        // add name
+        // add type
+        // add note
+        // add watering type
+        // sanitize text
+        // move to garden
+
+
+        val tv_add = view.findViewById<View>(R.id.tv_add) as TextView
+        val tv_name = view.findViewById<View>(R.id.tv_name) as TextView
+        val tv_note = view.findViewById<View>(R.id.tv_note) as TextView
+
+        var watering_position = 0
+
+        tv_add.setOnClickListener { onClick(tv_add, watering_position) }
+        tv_name.setOnClickListener { onClick(tv_name) }
+        tv_note.setOnClickListener { onClick(tv_note) }
+
+        val watering = this.resources.getStringArray(R.array.watering_types)
+        val spinner = view.findViewById(R.id.sp_water) as Spinner
+
+
+
+        if (spinner != null) {
+            var adapter = context?.let { ArrayAdapter(it, R.layout.spinner_item_tr, watering) }
+            spinner.adapter = adapter
+
+            if (adapter != null) {
+                adapter.setDropDownViewResource(R.layout.spinner_item_drop)
+            }
+
+
+            spinner.onItemSelectedListener = object :
+                AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>,
+                                            view: View?, position: Int, id: Long) {
+
+                    watering_position = position
+
+                }
+
+
+                override fun onNothingSelected(parent: AdapterView<*>) {
+
+                }
+            }
+        }
+
+
+
+
+    }
+
+
+
+    private fun onClick(v: View, watering_position: Int = 0) {
+        when (v.id) {
+            R.id.tv_add -> {
+
+
+
+                val tv_name = view?.findViewById<View>(R.id.tv_name) as TextView
+                val tv_note = view?.findViewById<View>(R.id.tv_note) as TextView
+
+                val re = Regex("[^a-zA-Z0-9А-Яа-я ]")
+
+
+
+
+                var plant_name = re.replace(tv_name.text.toString(), "").take(15)
+                var plant_note = re.replace(tv_note.text.toString(), "").take(15)
+
+
+                val db = Room.databaseBuilder(requireContext(), AppDatabase::class.java, "garden").allowMainThreadQueries().build()
+                val gardenDao = db.gardenDao()
+                val newPlant = Plant(plant_name, plant_note, "Placeholder_image", "Placeholder_date", watering_position)
+                gardenDao.insertAll(newPlant)
+
+                findNavController().navigate(R.id.action_new_plants_screen_to_my_plants_screen)
+
+                //Log.v("MyLog", "All " + gardenDao.getAll())
+
+
+            }
+
+            R.id.tv_name -> {
+                val tv_name = view?.findViewById<View>(R.id.tv_name) as TextView
+                tv_name.text=""
+            }
+            R.id.tv_note -> {
+                val tv_note = view?.findViewById<View>(R.id.tv_note) as TextView
+                tv_note.text=""
+            }
+
+        }
+    }
+
+
 
     companion object {
         /**

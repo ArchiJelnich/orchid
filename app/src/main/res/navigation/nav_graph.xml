@@ -33,7 +33,11 @@
         android:id="@+id/new_plants_screen"
         android:name="com.archi.orchard.new_plants_screen"
         android:label="fragment_new_plants_screen"
-        tools:layout="@layout/fragment_new_plants_screen" />
+        tools:layout="@layout/fragment_new_plants_screen" >
+        <action
+            android:id="@+id/action_new_plants_screen_to_my_plants_screen"
+            app:destination="@id/my_plants_screen" />
+    </fragment>
     <fragment
         android:id="@+id/current_plant_screen"
         android:name="com.archi.orchard.current_plant_screen"

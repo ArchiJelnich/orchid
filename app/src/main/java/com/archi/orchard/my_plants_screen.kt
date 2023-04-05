@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -43,12 +46,35 @@ class my_plants_screen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        val db = Room.databaseBuilder(requireContext(), AppDatabase::class.java, "garden").allowMainThreadQueries().build()
+        val gardenDao = db.gardenDao()
+
+        val names = gardenDao.listOfNames().toList()
+        val notes = gardenDao.listOfNotes().toList()
+        val watering_from_db = gardenDao.listOfWateringTypes().toList()
+
+
+
+
         val bt_new = view.findViewById<View>(R.id.bt_nav_new) as TextView
         //val bt_current = view.findViewById<View>(R.id.bt_nav_current) as TextView
 
         bt_new.setOnClickListener { onClick(bt_new) }
         //bt_current.setOnClickListener { onClick(bt_current) }
+
+
+        val rv_plants = view.findViewById<View>(R.id.rv_plants) as RecyclerView
+        rv_plants.layoutManager = LinearLayoutManager(context)
+
+
+        rv_plants.adapter = CustomRecyclerAdapter(names, notes, watering_from_db)
+
+
+
+
     }
+
 
     private fun onClick(v: View) {
         when (v.id) {
