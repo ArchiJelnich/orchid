@@ -13,6 +13,7 @@
         android:layout_marginLeft="10dp"
         android:background="@drawable/rounded_head"
         android:orientation="horizontal"
+        android:id="@+id/l_id"
         tools:ignore="MissingConstraints">
 
 

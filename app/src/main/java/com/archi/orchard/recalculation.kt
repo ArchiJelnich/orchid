@@ -1,5 +1,6 @@
 package com.archi.orchard
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -10,24 +11,12 @@ import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun recalc (watertype: Int): String {
-
-
-
                val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
                val current_date = LocalDate.now().format(formatter)
                var next_date = current_date.toString()
 
                var day_of_week = LocalDate.now().dayOfWeek
                //Log.d("MyLog", day_of_week.toString())
-
-
-
-
-
-
-
-
-
     when (watertype) {
                     0 -> {
                          next_date = LocalDate.now().plusDays(1).format(formatter)
@@ -138,3 +127,30 @@ fun recalc (watertype: Int): String {
     return next_date
 
 }
+
+
+@SuppressLint("SuspiciousIndentation")
+@RequiresApi(Build.VERSION_CODES.O)
+fun check_date(nextDate: String): Int {
+
+    var result = 0
+
+    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val current_date = LocalDate.now().format(formatter)
+
+
+
+    val split_current = current_date.split('/')
+    val split_next = nextDate.split('/')
+
+
+        if (split_current[0]>split_next[0]) {result=-1}
+        if (split_current[0]>=split_next[0] && split_current[1]>split_next[1]) {result=-1}
+        if (split_current[0]>=split_next[0] && split_current[1]>=split_next[1] && split_current[2]>split_next[2]) {result=-1}
+        if (split_current[0]==split_next[0] && split_current[1]==split_next[1] && split_current[2]==split_next[2]) {result=1}
+
+    return result
+
+    }
+
+
