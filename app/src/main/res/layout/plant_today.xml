@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_marginTop="10dp"
+    android:layout_height="wrap_content">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -11,6 +12,7 @@
         android:background="@drawable/rounded_screen"
         android:weightSum="100"
         tools:context=".main_screen"
+        android:id="@+id/l_id"
         android:orientation="horizontal"
         tools:ignore="MissingConstraints">
 
@@ -25,31 +27,33 @@
             android:background="@drawable/rounded_green"
             android:textColor="#FFFFFF"
             android:textSize="36sp"
+            android:id="@+id/tv_add"
             android:layout_marginStart="10dp"
             android:text="+"/>
-        <TextView
-            android:layout_weight="1"
-            android:layout_width="55dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:background="@drawable/rounded_yellow"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:layout_gravity="center"
-            android:layout_marginStart="10dp"
-            android:text="Hide"/>
 
         <TextView
             android:layout_weight="7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/header_text"
+            android:background="@drawable/rounded_head"
+            android:gravity="center"
+            android:id="@+id/r_name"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:text="@string/cur_def_name" />
+
+        <TextView
+            android:layout_weight="7"
+            android:id="@+id/r_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="@drawable/rounded_head"
             android:gravity="center"
             android:layout_marginRight="10dp"
             android:layout_gravity="center"
             android:layout_marginLeft="10dp"
-            android:text="@string/cur_def_name" />
+            android:text="@string/cur_def_watering_text" />
 
     </LinearLayout>
 

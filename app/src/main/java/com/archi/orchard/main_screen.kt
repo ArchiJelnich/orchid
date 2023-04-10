@@ -8,13 +8,17 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.navigation.findNavController
-import com.archi.orchard.databinding.ActivityMainBinding
 import android.content.Intent
+import android.os.Build
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -60,6 +64,7 @@ class main_screen : Fragment() {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -68,6 +73,38 @@ class main_screen : Fragment() {
 
         bt_settings.setOnClickListener { onClick(bt_settings) }
         bt_garden.setOnClickListener { onClick(bt_garden) }
+
+
+        val db = Room.databaseBuilder(requireContext(), AppDatabase::class.java, "garden").allowMainThreadQueries().build()
+        val gardenDao = db.gardenDao()
+        val names = gardenDao.listOfNames().toList()
+        val nextdays = gardenDao.listOfNextDays().toList()
+
+        val today_names = ArrayList<String>()
+        val today_dates = ArrayList<String>()
+
+
+
+
+
+        for (i in nextdays.indices)
+        {
+            if (check_date(nextdays[i])!=0) {
+                today_dates.add(nextdays[i])
+                today_names.add(names[i])
+            }
+
+        }
+
+
+
+
+
+        val rv_today = view.findViewById<View>(R.id.rv_today) as RecyclerView
+        rv_today.layoutManager = LinearLayoutManager(context)
+
+        rv_today.adapter = CustomRecyclerAdapter_main(today_names, today_dates)
+
     }
 
     private fun onClick(v: View) {

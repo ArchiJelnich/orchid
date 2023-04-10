@@ -1,20 +1,23 @@
 package com.archi.orchard
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.room.Room
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.coroutines.coroutineContext
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun recalc (watertype: Int): String {
                val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
                val current_date = LocalDate.now().format(formatter)
                var next_date = current_date.toString()
-
                var day_of_week = LocalDate.now().dayOfWeek
                //Log.d("MyLog", day_of_week.toString())
     when (watertype) {
@@ -149,8 +152,12 @@ fun check_date(nextDate: String): Int {
         if (split_current[0]>=split_next[0] && split_current[1]>=split_next[1] && split_current[2]>split_next[2]) {result=-1}
         if (split_current[0]==split_next[0] && split_current[1]==split_next[1] && split_current[2]==split_next[2]) {result=1}
 
+
+
+
     return result
 
     }
+
 
 
