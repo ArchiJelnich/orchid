@@ -147,10 +147,10 @@ fun check_date(nextDate: String): Int {
     val split_next = nextDate.split('/')
 
 
-        if (split_current[0]>split_next[0]) {result=-1}
-        if (split_current[0]>=split_next[0] && split_current[1]>split_next[1]) {result=-1}
-        if (split_current[0]>=split_next[0] && split_current[1]>=split_next[1] && split_current[2]>split_next[2]) {result=-1}
-        if (split_current[0]==split_next[0] && split_current[1]==split_next[1] && split_current[2]==split_next[2]) {result=1}
+        if (split_current[2]>split_next[2]) {result=-1}
+        if (split_current[2]>=split_next[2] && split_current[1]>split_next[1]) {result=-1}
+        if (split_current[2]>=split_next[2] && split_current[1]>=split_next[1] && split_current[0]>split_next[0]) {result=-1}
+        if (split_current[2]==split_next[2] && split_current[1]==split_next[1] && split_current[0]==split_next[0]) {result=1}
 
 
 
