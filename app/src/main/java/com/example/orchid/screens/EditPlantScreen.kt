@@ -67,18 +67,28 @@ fun PlantEditScreen () {
                         .size(200.dp)
                 )}
 
+                var plantName by remember { mutableStateOf("") }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text(
-                            style = MaterialTheme.typography.headlineLarge,
+                        TextField(
+                            value = plantName,
+                            onValueChange = { plantName = it },
+                            textStyle = MaterialTheme.typography.headlineLarge,
                             modifier = Modifier
-                                .align(alignment = Alignment.CenterHorizontally)
+                                .align(Alignment.CenterHorizontally)
                                 .padding(start = 40.dp),
-                            textAlign = TextAlign.Center,
-                            text = stringResource(R.string.plant_name),
+                            singleLine = true,
+                            placeholder = {
+                                Text(
+                                    text = stringResource(R.string.plant_name),
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         )
                     }
                 }

@@ -11,11 +11,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PlantDao {
     @Query("SELECT * FROM Plant")
-    fun getAllAverage(): List<Plant>
+    fun getAll(): Flow<List<Plant>>
+    @Insert
+    fun insertAll(vararg category: Plant)
 }
 
 @Dao
 interface WateringDao {
     @Query("SELECT * FROM Watering")
-    fun getAllAverage(): List<Watering>
+    fun getAll(): List<Watering>
 }

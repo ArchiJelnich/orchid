@@ -1,5 +1,6 @@
 package com.example.orchid.screens
 
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -26,18 +27,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.orchid.PlantEditActivity
+import com.example.orchid.PlantViewModel
 import com.example.orchid.R
+import com.example.orchid.TodayActivity
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun TodayScreen () {
+fun TodayScreen (viewModel: PlantViewModel) {
 
     MaterialTheme(
     ){
@@ -45,6 +52,10 @@ fun TodayScreen () {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
+
+            val plants by viewModel.plants.collectAsState(initial = emptyList())
+            ///val plants = listOf("Rose", "Tulip", "Palm") //
+
             Column(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = stringResource(R.string.header_today),
@@ -61,15 +72,18 @@ fun TodayScreen () {
                         .weight(1f)
                         .padding(16.dp)
                 ) {
-                    val plants = listOf("Rose", "Tulip", "Palm") //
+
                     items(plants) { plant ->
-                        TodayPlantItem(plant = plant)
+                        TodayPlantItem(plant = plant.plantName)
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
 
+                val context = LocalContext.current
+
                 Button(
                 onClick = {
+                    context.startActivity(Intent(context, PlantEditActivity::class.java))
                 },
                 modifier = Modifier
                     .fillMaxWidth()

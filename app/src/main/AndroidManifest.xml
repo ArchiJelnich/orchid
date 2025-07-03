@@ -25,11 +25,15 @@
             android:exported="true">
         </activity>
         <activity
-            android:name=".`SettingActivity.kt`"
+            android:name=".SettingActivity"
             android:exported="true">
         </activity>
         <activity
             android:name=".GardenActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".PlantEditActivity"
             android:exported="true">
         </activity>
     </application>
