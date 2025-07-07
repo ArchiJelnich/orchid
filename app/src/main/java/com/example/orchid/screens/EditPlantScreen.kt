@@ -1,6 +1,8 @@
 package com.example.orchid.screens
 
+import android.content.Intent
 import android.os.Build
+import android.preference.PreferenceManager
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,7 +41,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.room.ColumnInfo
+import androidx.room.PrimaryKey
 import com.example.orchid.R
+import com.example.orchid.TodayActivity
+import com.example.orchid.infra.flagPut
+import com.example.orchid.room.Plant
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -51,6 +58,10 @@ fun PlantEditScreen () {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
+
+            val context = LocalContext.current
+
+
             Column(modifier = Modifier.fillMaxSize()) {
 
                 Row(
@@ -68,6 +79,9 @@ fun PlantEditScreen () {
                 )}
 
                 var plantName by remember { mutableStateOf("") }
+                var plantType by remember { mutableStateOf(0) }
+                var plantSubType by remember { mutableStateOf("") }
+
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -93,10 +107,26 @@ fun PlantEditScreen () {
                     }
                 }
 
-                SmartPicker()
+                SmartPicker(plantType = plantType,
+                    onPlantTypeSelected = { plantType = it },
+                    plantSubType = plantSubType,
+                    onPlantSubTypeSelected = { plantSubType = it })
 
                 Button(
                     onClick = {
+
+                        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+                        val editor = preferences.edit()
+                        editor.apply()
+                        flagPut(context, 100)
+                        //preferences.edit().putInt("plantID", plantID).apply()
+                        preferences.edit().putString("plantName", plantName).apply()
+                        preferences.edit().putInt("plantType", plantType).apply()
+                        preferences.edit().putString("plantSubType", plantSubType).apply()
+                        //preferences.edit().putInt("lastWateringID", lastWateringID).apply()
+                        val intent = Intent(context, TodayActivity::class.java)
+                        context.startActivity(intent)
+
 
                     },
                     modifier = Modifier
@@ -114,11 +144,16 @@ fun PlantEditScreen () {
 
 
 @Composable
-fun SmartPicker() {
+fun SmartPicker(plantType: Int,
+                onPlantTypeSelected: (Int) -> Unit,
+                plantSubType : String,
+                onPlantSubTypeSelected: (String) -> Unit) {
 
     val context = LocalContext.current
+    var selectedOptionIndex by remember { mutableStateOf(plantType) }
+    var selectedAdditionalInfo by remember { mutableStateOf(plantSubType) }
     val options = context.resources.getStringArray(R.array.plant_watering_type)
-    var selectedOption by remember { mutableStateOf(options[0]) }
+    val selectedOption by remember { mutableStateOf(options[0]) }
     var text by remember { mutableStateOf("") }
     val selectedWeekDays = remember { mutableStateListOf<Int>() }
     val selectedMonthDays = remember { mutableStateListOf<Int>() }
@@ -128,7 +163,7 @@ fun SmartPicker() {
 
         Box {
             Text(
-                text = selectedOption,
+                text = options[selectedOptionIndex],
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { expanded = true }
@@ -137,11 +172,12 @@ fun SmartPicker() {
             )
 
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                options.forEach { label ->
+                options.forEachIndexed { index, label ->
                     DropdownMenuItem(
                         text = { Text(label) },
                         onClick = {
-                            selectedOption = label
+                            selectedOptionIndex = index
+                            onPlantTypeSelected(index)
                             expanded = false
                         }
                     )
@@ -151,17 +187,19 @@ fun SmartPicker() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        when (selectedOption) {
-            options[0] -> {
+        when (selectedOptionIndex) {
+            0 -> {
                 TextField(
                     value = text,
-                    onValueChange = { text = it },
-                    label = { Text(stringResource( R.string.plant_each_day)) },
+                    onValueChange = { text = it
+                        onPlantSubTypeSelected(it)},
+                    label = { Text(stringResource(R.string.plant_each_day)) },
                     modifier = Modifier.fillMaxWidth()
                 )
+
             }
 
-            options[1] -> {
+            1 -> {
                 val days = context.resources.getStringArray(R.array.week_days)
                 Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     days.forEachIndexed { index, day ->
@@ -170,6 +208,7 @@ fun SmartPicker() {
                             onClick = {
                                 if (selected) selectedWeekDays.remove(index)
                                 else selectedWeekDays.add(index)
+                                onPlantSubTypeSelected(selectedWeekDays.joinToString(","))
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (selected) Color.Green else Color.LightGray
@@ -182,7 +221,7 @@ fun SmartPicker() {
                 }
             }
 
-            options[2] -> {
+            2 -> {
                 val circleSize = 40.dp
                 val rows = (1..31).chunked(7)
                 rows.forEach { week ->
@@ -194,6 +233,7 @@ fun SmartPicker() {
                     ) {
                         week.forEach { day ->
                             val selected = selectedMonthDays.contains(day)
+                            onPlantSubTypeSelected(selectedMonthDays.joinToString(","))
 
                             Box(
                                 modifier = Modifier

@@ -10,7 +10,7 @@ data class Plant (
     @PrimaryKey(autoGenerate = true) var plantID: Int,
     @ColumnInfo(name = "plantName") val plantName: String,
     @ColumnInfo(name = "plantType") val plantType: Int,
-    @ColumnInfo(name = "plantSubType") val plantSubType: Int,
+    @ColumnInfo(name = "plantSubType") val plantSubType: String,
     @ColumnInfo(name = "lastWateringID") val lastWateringID: Int,
 ) : Serializable
 
