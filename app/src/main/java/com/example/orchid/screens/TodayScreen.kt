@@ -2,6 +2,7 @@ package com.example.orchid.screens
 
 import android.content.Intent
 import android.os.Build
+import android.preference.PreferenceManager
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +42,8 @@ import com.example.orchid.PlantEditActivity
 import com.example.orchid.PlantViewModel
 import com.example.orchid.R
 import com.example.orchid.TodayActivity
+import com.example.orchid.infra.flagPut
+import com.example.orchid.room.Plant
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -74,7 +77,7 @@ fun TodayScreen (viewModel: PlantViewModel) {
                 ) {
 
                     items(plants) { plant ->
-                        TodayPlantItem(plant = plant.plantName)
+                        TodayPlantItem(plant = plant)
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
@@ -104,8 +107,9 @@ fun TodayScreen (viewModel: PlantViewModel) {
 
 
 @Composable
-fun TodayPlantItem(plant : String) {
+fun TodayPlantItem(plant : Plant) {
 
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -128,7 +132,7 @@ fun TodayPlantItem(plant : String) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = plant,
+                text = plant.plantName,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -143,7 +147,15 @@ fun TodayPlantItem(plant : String) {
             IconButton(onClick = { onClickEmpty() }) {
                 Icon(Icons.Default.Delete, contentDescription = "-")
             }
-            IconButton(onClick = { onClickEmpty() }) {
+            IconButton(onClick = {
+                val intent = Intent(context, PlantEditActivity::class.java)
+
+                val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+                val editor = preferences.edit()
+                editor.apply()
+                plant.plantID?.let { preferences.edit().putInt("edit_plant_id", it).apply() }
+                flagPut(context, 102)
+                context.startActivity(intent) }) {
                 Icon(Icons.Default.Add, contentDescription = "+")
             }
         }

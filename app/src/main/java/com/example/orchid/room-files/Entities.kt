@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import java.io.Serializable
 
 @Entity(tableName = "Plant")
-data class Plant (
+data class Plant(
     @PrimaryKey(autoGenerate = true) var plantID: Int,
     @ColumnInfo(name = "plantName") val plantName: String,
     @ColumnInfo(name = "plantType") val plantType: Int,

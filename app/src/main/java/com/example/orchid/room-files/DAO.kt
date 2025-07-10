@@ -1,7 +1,6 @@
 package com.example.orchid.room
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -12,8 +11,12 @@ import kotlinx.coroutines.flow.Flow
 interface PlantDao {
     @Query("SELECT * FROM Plant")
     fun getAll(): Flow<List<Plant>>
+    @Query("SELECT * FROM Plant WHERE plantID=:plantID")
+    fun getByID(plantID: Int?): Plant
     @Insert
     fun insertAll(vararg category: Plant) : List<Long>
+    @Update
+    fun updatePlant(plant: Plant)
 }
 
 @Dao

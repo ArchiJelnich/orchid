@@ -4,12 +4,14 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.getIntent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.preference.PreferenceManager
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -63,13 +65,17 @@ import com.example.orchid.TodayActivity
 import com.example.orchid.infra.flagPut
 import com.example.orchid.room.Plant
 import coil.compose.rememberAsyncImagePainter
+import com.example.orchid.infra.flagGet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PlantEditScreen () {
+fun PlantEditScreen (editedPlant : Plant, currentFlag : Int) {
+
+
+
 
     MaterialTheme(
     ){
@@ -144,10 +150,34 @@ fun PlantEditScreen () {
                     }
                 }
 
-                var plantName by remember { mutableStateOf("") }
-                var plantType by remember { mutableStateOf(0) }
-                var plantSubType by remember { mutableStateOf("") }
+                var def_plantName=""
+                var def_plantType=0
+                var def_plantSubType=""
 
+                val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+                val editor = preferences.edit()
+                editor.apply()
+                preferences.edit().putInt("plantID", 0).apply()
+
+                if (currentFlag==102)
+                {
+                    def_plantName=editedPlant.plantName
+                    def_plantType=editedPlant.plantType
+                    def_plantSubType=editedPlant.plantSubType
+                    preferences.edit().putInt("plantID", editedPlant.plantID).apply()
+
+                    //editedPlant.plantID?.let { preferences.edit().putInt("plantID", it).apply() }
+                }
+
+
+
+                var plantName by remember { mutableStateOf(def_plantName) }
+                var plantType by remember { mutableStateOf(def_plantType) }
+                var plantSubType by remember { mutableStateOf(def_plantSubType) }
+
+
+                //Log.d("MyDebug", "plantType + " + plantType)
+                //Log.d("MyDebug", "plantSubType + " + plantSubType)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -186,7 +216,12 @@ fun PlantEditScreen () {
                         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
                         val editor = preferences.edit()
                         editor.apply()
-                        flagPut(context, 100)
+                        if (flagGet(context)!=102)
+                        {
+                            flagPut(context, 100)
+                        }
+
+
                         //preferences.edit().putInt("plantID", plantID).apply()
                         preferences.edit().putString("plantName", plantName).apply()
                         preferences.edit().putInt("plantType", plantType).apply()
@@ -270,7 +305,7 @@ fun SmartPicker(plantType: Int,
         when (selectedOptionIndex) {
             0 -> {
                 TextField(
-                    value = text,
+                    value = plantSubType,
                     onValueChange = { text = it
                         onPlantSubTypeSelected(it)},
                     label = { Text(stringResource(R.string.plant_each_day)) },

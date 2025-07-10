@@ -16,3 +16,4 @@ fun flagGet(context: Context): Int {
 
 /// 0 - no action
 /// 100 - plant was created
+/// 102 - plant edit
