@@ -15,6 +15,7 @@ import com.example.orchid.infra.flagPut
 import com.example.orchid.room.AppDatabase
 import com.example.orchid.room.Plant
 import com.example.orchid.room.PlantDao
+import com.example.orchid.room.PlantPhoto
 import com.example.orchid.screens.PlantEditScreen
 import com.example.orchid.ui.theme.OrchidTheme
 import kotlinx.coroutines.GlobalScope
@@ -43,8 +44,10 @@ class PlantEditActivity : ComponentActivity() {
             val plantName = preferences.getString("plantName", "")
             val plantType = preferences.getInt("plantType", 0)
             val plantSubType = preferences.getString("plantSubType", "")
+            val plantPhoto = preferences.getString("plantPhoto", "")
             val db: AppDatabase = AppDatabase.getInstance(this)
             val plantDao = db.PlantDao()
+            val plantPhotoDao = db.PlantPhotoDao()
 
             val PlantToCreate = Plant(
                 plantID = 0,
@@ -54,10 +57,27 @@ class PlantEditActivity : ComponentActivity() {
                 lastWateringID = 0
             )
 
+
+
             GlobalScope.launch {
+
+                val id: Long = plantDao.insertAll(PlantToCreate)[0]
+                Log.d("MyDebug", "id $id")
+
+                val PlantPhotoToCreate = PlantPhoto(
+                    ppID = 0,
+                    plantID = id.toInt(),
+                    photo = plantPhoto,
+                )
+
+                plantPhotoDao.insertAllPhoto(PlantPhotoToCreate)
+
                 Log.d("MyDebug", "To create $PlantToCreate")
-                plantDao.insertAll(PlantToCreate)
+                Log.d("MyDebug", "To create $PlantPhotoToCreate")
             }
+
+
+
 
         }
         flagPut(this, 0)

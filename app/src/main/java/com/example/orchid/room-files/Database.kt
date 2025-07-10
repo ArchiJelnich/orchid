@@ -5,10 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Plant::class, Watering::class],version = 1)
+@Database(entities = [Plant::class, Watering::class, PlantPhoto::class],version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun PlantDao(): PlantDao
     abstract fun WateringDao(): WateringDao
+    abstract fun PlantPhotoDao(): PlantPhotoDao
 
     companion object {
         @Volatile

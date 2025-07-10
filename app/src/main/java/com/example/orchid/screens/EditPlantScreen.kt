@@ -1,8 +1,17 @@
 package com.example.orchid.screens
 
+import android.Manifest
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.preference.PreferenceManager
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,6 +27,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Modifier
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,6 +38,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -36,17 +47,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.room.ColumnInfo
 import androidx.room.PrimaryKey
 import com.example.orchid.R
 import com.example.orchid.TodayActivity
 import com.example.orchid.infra.flagPut
 import com.example.orchid.room.Plant
+import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -60,9 +79,46 @@ fun PlantEditScreen () {
         ) {
 
             val context = LocalContext.current
+            var imageUri by remember { mutableStateOf<Uri?>(null) }
+            var croppedBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
+
+            val imagePickerLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.GetContent()
+            ) { uri: Uri? ->
+                imageUri = uri
+            }
+
+            LaunchedEffect(imageUri) {
+                imageUri?.let { uri ->
+                    val bitmap = loadBitmapAndCropCenter(context, uri)
+                    croppedBitmap = bitmap
+                }
+            }
 
             Column(modifier = Modifier.fillMaxSize()) {
+
+                val imageModifier = Modifier
+                    .size(200.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color.LightGray)
+                    .clickable {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ||
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.READ_EXTERNAL_STORAGE
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
+                            imagePickerLauncher.launch("image/*")
+                        } else {
+                            val activity = context as Activity
+                            ActivityCompat.requestPermissions(
+                                activity,
+                                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                                200
+                            )
+                        }
+                    }
 
                 Row(
                     modifier = Modifier
@@ -70,13 +126,23 @@ fun PlantEditScreen () {
                         .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
-                ){
-                Image(
-                    painter = painterResource(id = R.drawable.icon_image),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(200.dp)
-                )}
+                ) {
+                    if (croppedBitmap != null) {
+                        Image(
+                            bitmap = croppedBitmap!!.asImageBitmap(),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = imageModifier
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.icon_image),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = imageModifier
+                        )
+                    }
+                }
 
                 var plantName by remember { mutableStateOf("") }
                 var plantType by remember { mutableStateOf(0) }
@@ -107,6 +173,8 @@ fun PlantEditScreen () {
                     }
                 }
 
+
+
                 SmartPicker(plantType = plantType,
                     onPlantTypeSelected = { plantType = it },
                     plantSubType = plantSubType,
@@ -123,7 +191,7 @@ fun PlantEditScreen () {
                         preferences.edit().putString("plantName", plantName).apply()
                         preferences.edit().putInt("plantType", plantType).apply()
                         preferences.edit().putString("plantSubType", plantSubType).apply()
-                        //preferences.edit().putInt("lastWateringID", lastWateringID).apply()
+                        preferences.edit().putString("plantPhoto", croppedBitmap.toString()).apply()
                         val intent = Intent(context, TodayActivity::class.java)
                         context.startActivity(intent)
 
@@ -142,6 +210,18 @@ fun PlantEditScreen () {
 
 }
 
+suspend fun loadBitmapAndCropCenter(context: Context, uri: Uri): Bitmap? = withContext(Dispatchers.IO) {
+    try {
+        val original = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+        val dimension = minOf(original.width, original.height)
+        val xOffset = (original.width - dimension) / 2
+        val yOffset = (original.height - dimension) / 2
+        Bitmap.createBitmap(original, xOffset, yOffset, dimension, dimension)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
 
 @Composable
 fun SmartPicker(plantType: Int,

@@ -13,11 +13,17 @@ interface PlantDao {
     @Query("SELECT * FROM Plant")
     fun getAll(): Flow<List<Plant>>
     @Insert
-    fun insertAll(vararg category: Plant)
+    fun insertAll(vararg category: Plant) : List<Long>
 }
 
 @Dao
 interface WateringDao {
     @Query("SELECT * FROM Watering")
     fun getAll(): List<Watering>
+}
+
+@Dao
+interface PlantPhotoDao {
+    @Insert
+    fun insertAllPhoto(vararg category: PlantPhoto)
 }
