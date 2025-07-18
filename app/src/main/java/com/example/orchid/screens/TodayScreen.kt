@@ -1,8 +1,6 @@
 package com.example.orchid.screens
 
-import android.content.Intent
 import android.os.Build
-import android.preference.PreferenceManager
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +17,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -28,26 +25,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.orchid.PlantEditActivity
-import com.example.orchid.PlantViewModel
 import com.example.orchid.R
-import com.example.orchid.TodayActivity
-import com.example.orchid.infra.flagPut
-import com.example.orchid.room.Plant
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun TodayScreen (viewModel: PlantViewModel) {
+fun TodayScreen () {
 
     MaterialTheme(
     ){
@@ -55,10 +44,6 @@ fun TodayScreen (viewModel: PlantViewModel) {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-
-            val plants by viewModel.plants.collectAsState(initial = emptyList())
-            ///val plants = listOf("Rose", "Tulip", "Palm") //
-
             Column(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = stringResource(R.string.header_today),
@@ -75,41 +60,34 @@ fun TodayScreen (viewModel: PlantViewModel) {
                         .weight(1f)
                         .padding(16.dp)
                 ) {
-
+                    val plants = listOf("Rose", "Tulip", "Palm")
                     items(plants) { plant ->
-                        TodayPlantItem(plant = plant)
+                        PlantItem(plant = plant)
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
 
-                val context = LocalContext.current
-
-                Button(
-                onClick = {
-                    context.startActivity(Intent(context, PlantEditActivity::class.java))
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                ) {
-                Text(stringResource(R.string.common_add))
-                }
+                 Button(
+                    onClick = {
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                 ) {
+                    Text(stringResource(R.string.common_add))
+                 }
 
                 BottomPanel()
 
-             }
-
+            }
         }
-
     }
-
 }
 
 
 @Composable
-fun TodayPlantItem(plant : Plant) {
+fun PlantItem(plant : String) {
 
-    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -126,40 +104,28 @@ fun TodayPlantItem(plant : Plant) {
             modifier = Modifier.size(40.dp)
         )
 
-
         Column(
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = plant.plantName,
+                text = plant,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
             Text(
-                text = "Next watering:",
+                text = "Scheduler",
                 fontSize = 14.sp,
                 color = Color.DarkGray
             )
         }
         Row {
             IconButton(onClick = { onClickEmpty() }) {
-                Icon(Icons.Default.Delete, contentDescription = "-")
-            }
-            IconButton(onClick = {
-                val intent = Intent(context, PlantEditActivity::class.java)
-
-                val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-                val editor = preferences.edit()
-                editor.apply()
-                plant.plantID?.let { preferences.edit().putInt("edit_plant_id", it).apply() }
-                flagPut(context, 102)
-                context.startActivity(intent) }) {
                 Icon(Icons.Default.Add, contentDescription = "+")
             }
         }
 
     }
-
 }
+

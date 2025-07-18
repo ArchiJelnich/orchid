@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.orchid.CalendarActivity
-import com.example.orchid.GardenActivity
+import com.example.orchid.MyPlantsActivity
 import com.example.orchid.R
 import com.example.orchid.SettingActivity
 import com.example.orchid.TodayActivity
@@ -49,7 +49,7 @@ fun BottomPanel() {
         )
         {
             Image(
-                painter = painterResource(id = R.drawable.icon_today),
+                painter = painterResource(id = R.drawable.icon_flower),
                 contentDescription = "Settings",
                 modifier = Modifier.align(Alignment.Center)
             )
@@ -72,7 +72,6 @@ fun BottomPanel() {
                 modifier = Modifier.align(Alignment.Center)
             )
         }
-
         Box(
             modifier = Modifier
                 .size(50.dp)
@@ -80,16 +79,17 @@ fun BottomPanel() {
                 .background(Color.White)
                 .clickable (
                     onClick = {
-                        context.startActivity(Intent(context, GardenActivity::class.java))
+                        context.startActivity(Intent(context, MyPlantsActivity::class.java))
                     },)
         )
         {
             Image(
-                painter = painterResource(id = R.drawable.icon_flower),
+                painter = painterResource(id = R.drawable.icon_today),
                 contentDescription = "Settings",
                 modifier = Modifier.align(Alignment.Center)
             )
         }
+
 
         Box(
             modifier = Modifier

@@ -12,6 +12,7 @@ data class Plant(
     @ColumnInfo(name = "plantType") val plantType: Int,
     @ColumnInfo(name = "plantSubType") val plantSubType: String,
     @ColumnInfo(name = "lastWateringID") val lastWateringID: Int,
+    @ColumnInfo(name = "deleteFlag", defaultValue = "0") val deleteFlag: Int = 0,
 ) : Serializable
 
 @Entity(tableName = "Watering")

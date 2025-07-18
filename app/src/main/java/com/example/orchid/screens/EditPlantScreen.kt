@@ -46,6 +46,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -61,10 +62,10 @@ import androidx.core.content.ContextCompat
 import androidx.room.ColumnInfo
 import androidx.room.PrimaryKey
 import com.example.orchid.R
-import com.example.orchid.TodayActivity
 import com.example.orchid.infra.flagPut
 import com.example.orchid.room.Plant
 import coil.compose.rememberAsyncImagePainter
+import com.example.orchid.MyPlantsActivity
 import com.example.orchid.infra.flagGet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -227,7 +228,7 @@ fun PlantEditScreen (editedPlant : Plant, currentFlag : Int) {
                         preferences.edit().putInt("plantType", plantType).apply()
                         preferences.edit().putString("plantSubType", plantSubType).apply()
                         preferences.edit().putString("plantPhoto", croppedBitmap.toString()).apply()
-                        val intent = Intent(context, TodayActivity::class.java)
+                        val intent = Intent(context, MyPlantsActivity::class.java)
                         context.startActivity(intent)
 
 
@@ -266,12 +267,26 @@ fun SmartPicker(plantType: Int,
 
     val context = LocalContext.current
     var selectedOptionIndex by remember { mutableStateOf(plantType) }
+
+    val initialWeekDays = remember {
+        if (plantType == 1 && plantSubType.isNotBlank()) {
+            plantSubType.split(",").mapNotNull { it.toIntOrNull() }.toMutableStateList()
+        } else mutableStateListOf()
+    }
+    val initialMonthDays = remember {
+        if (plantType == 2 && plantSubType.isNotBlank()) {
+            plantSubType.split(",").mapNotNull { it.toIntOrNull() }.toMutableStateList()
+        } else mutableStateListOf()
+    }
+
+    val selectedWeekDays = remember { initialWeekDays }
+    val selectedMonthDays = remember { initialMonthDays }
+
     var selectedAdditionalInfo by remember { mutableStateOf(plantSubType) }
     val options = context.resources.getStringArray(R.array.plant_watering_type)
     val selectedOption by remember { mutableStateOf(options[0]) }
     var text by remember { mutableStateOf("") }
-    val selectedWeekDays = remember { mutableStateListOf<Int>() }
-    val selectedMonthDays = remember { mutableStateListOf<Int>() }
+
 
     Column(modifier = Modifier.padding(16.dp)) {
         var expanded by remember { mutableStateOf(false) }
@@ -293,6 +308,10 @@ fun SmartPicker(plantType: Int,
                         onClick = {
                             selectedOptionIndex = index
                             onPlantTypeSelected(index)
+                            onPlantSubTypeSelected("")
+                            text = ""
+                            selectedWeekDays.clear()
+                            selectedMonthDays.clear()
                             expanded = false
                         }
                     )

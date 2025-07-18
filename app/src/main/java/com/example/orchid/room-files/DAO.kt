@@ -11,12 +11,16 @@ import kotlinx.coroutines.flow.Flow
 interface PlantDao {
     @Query("SELECT * FROM Plant")
     fun getAll(): Flow<List<Plant>>
+    @Query("SELECT * FROM Plant WHERE deleteFlag=0")
+    fun getAllActive(): Flow<List<Plant>>
     @Query("SELECT * FROM Plant WHERE plantID=:plantID")
     fun getByID(plantID: Int?): Plant
     @Insert
     fun insertAll(vararg category: Plant) : List<Long>
     @Update
     fun updatePlant(plant: Plant)
+    @Query("UPDATE Plant SET deleteFlag = 1 WHERE plantID = :plantId")
+    fun updateDeleteFlagById(plantId: Int)
 }
 
 @Dao
