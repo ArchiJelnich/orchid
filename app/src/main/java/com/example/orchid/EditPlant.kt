@@ -26,9 +26,11 @@ class PlantEditActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val db: AppDatabase = AppDatabase.getInstance(this)
         val plantDao = db.PlantDao()
+        val plantPhotoDao = db.PlantPhotoDao()
         var currentFlag = flagGet(this)
 
-        Log.d("MyDebug", "flag = " + currentFlag)
+        Log.d("MyDebugPhotoChange", "onCreate : OnCreate")
+        Log.d("MyDebugPhotoChange", "onCreate : flag = " + currentFlag)
 
         var editedPlant = Plant(
             plantID = 0,
@@ -38,29 +40,45 @@ class PlantEditActivity : ComponentActivity() {
             lastWateringID = 0
         )
 
+        var plantImageLink = ""
 
-        if (currentFlag==102) {
+
+        if (currentFlag==102 || currentFlag==202) {
             val preferences = PreferenceManager.getDefaultSharedPreferences(this)
             var editedPlantID = preferences.getInt("edit_plant_id", 0)
             GlobalScope.launch {
                 editedPlant = plantDao.getByID(editedPlantID)
+                plantImageLink = plantPhotoDao.getByID(editedPlantID)
+                Log.d("MyDebugPhotoChange", "onCreate : edit_plant_id + " + editedPlantID.toString())
+                Log.d("MyDebugPhotoChange", "onCreate : plantPhotoDao.getByID(editedPlantID) + " + plantPhotoDao.getByID(editedPlantID).toString())
+                Log.d("MyDebugPhotoChange", "onCreate : plantPhotoDao.getAll + " + plantPhotoDao.getAll().toString())
+                Log.d("MyDebugPhotoChange", "onCreate : BREAKE POINT")
             }
         }
+
+
 
 
         enableEdgeToEdge()
         setContent {
             OrchidTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    Log.d("MyDebug", "editedPlant + " + editedPlant)
-                    PlantEditScreen(editedPlant,currentFlag)
+                    Log.d("MyDebug", "onCreate : editedPlant + " + editedPlant)
+                    Log.d("MyDebugPhotoChange", "onCreate : plantImageLink = " + plantImageLink)
+                    PlantEditScreen(editedPlant,plantImageLink, currentFlag)
                 }
             }
         }
     }
 
+    override fun onResume() {
+        Log.d("MyDebugPhotoChange", "OnResume")
+        super.onResume()
+    }
+
     override fun onPause() {
-        Log.d("MyDebug", "flag onPause = " + flagGet(this))
+        Log.d("MyDebugPhotoChange", "OnPause")
+        Log.d("MyDebugPhotoChange", "flag onPause = " + flagGet(this))
 
         if (flagGet(this)==100)
         {
@@ -81,7 +99,7 @@ class PlantEditActivity : ComponentActivity() {
                 lastWateringID = 0
             )
 
-            Log.d("MyDebug", "PlantToCreate onPause = " + PlantToCreate)
+            Log.d("MyDebugPhotoChange", "PlantToCreate onPause = " + PlantToCreate)
 
             GlobalScope.launch {
 
@@ -90,20 +108,20 @@ class PlantEditActivity : ComponentActivity() {
                 val PlantPhotoToCreate = PlantPhoto(
                     ppID = 0,
                     plantID = id.toInt(),
-                    photo = plantPhoto,
+                    photo = plantPhoto.toString(),
                 )
 
-                Log.d("MyDebug", "PlantPhotoToCreate onPause = " + PlantPhotoToCreate)
+                Log.d("MyDebugPhotoChange", "PlantPhotoToCreate onPause = " + PlantPhotoToCreate)
                 plantPhotoDao.insertAllPhoto(PlantPhotoToCreate)
 
 
             }
 
 
-
+            flagPut(this, 0)
 
         }
-        if (flagGet(this)==102)        {
+        if (flagGet(this)==102 || flagGet(this)==202)        {
             val preferences = PreferenceManager.getDefaultSharedPreferences(this)
             val plantName = preferences.getString("plantName", "")
             val plantType = preferences.getInt("plantType", 0)
@@ -112,7 +130,7 @@ class PlantEditActivity : ComponentActivity() {
             val plantPhoto = preferences.getString("plantPhoto", "")
             val db: AppDatabase = AppDatabase.getInstance(this)
             val plantDao = db.PlantDao()
-            //val plantPhotoDao = db.PlantPhotoDao()
+            val plantPhotoDao = db.PlantPhotoDao()
 
 
 
@@ -126,9 +144,11 @@ class PlantEditActivity : ComponentActivity() {
 
 
 
+
+
             GlobalScope.launch {
 
-                Log.d("MyDebug", "EditPlan : onPause // PlantToUpdate = " + PlantToUpdate)
+                Log.d("MyDebugPhotoChange", "EditPlan : onPause // PlantToUpdate = " + PlantToUpdate)
                 plantDao.updatePlant(PlantToUpdate)
 
                 //val PlantPhotoToCreate = PlantPhoto(
@@ -139,9 +159,14 @@ class PlantEditActivity : ComponentActivity() {
 
                 //plantPhotoDao.insertAllPhoto(PlantPhotoToCreate)
 
-            }}
+            }
 
-        flagPut(this, 0)
+
+                flagPut(this, 0)
+
+        }
+
+
         super.onPause()
     }
 }

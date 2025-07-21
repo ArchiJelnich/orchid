@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.getIntent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
@@ -30,7 +29,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.Modifier
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -48,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -59,21 +58,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.room.ColumnInfo
-import androidx.room.PrimaryKey
-import com.example.orchid.R
-import com.example.orchid.infra.flagPut
-import com.example.orchid.room.Plant
-import coil.compose.rememberAsyncImagePainter
+import androidx.core.net.toUri
 import com.example.orchid.MyPlantsActivity
+import com.example.orchid.R
 import com.example.orchid.infra.flagGet
+import com.example.orchid.infra.flagGetExtra
+import com.example.orchid.infra.flagPut
+import com.example.orchid.infra.flagPutExtra
+import com.example.orchid.room.AppDatabase
+import com.example.orchid.room.Plant
+import com.example.orchid.room.PlantPhoto
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.net.URI
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PlantEditScreen (editedPlant : Plant, currentFlag : Int) {
+fun PlantEditScreen (editedPlant : Plant, plantImageLink: String, currentFlag : Int) {
 
 
 
@@ -85,10 +89,21 @@ fun PlantEditScreen (editedPlant : Plant, currentFlag : Int) {
             color = MaterialTheme.colorScheme.background
         ) {
 
+            Log.d("MyDebugPhoto", "plantImageLink + " + plantImageLink)
+
+
+            val defUri = plantImageLink.toUri()
+
+
+
             val context = LocalContext.current
-            var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+
+
+            var imageUri by remember { mutableStateOf<Uri?>(defUri) }
             var croppedBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
+            Log.d("MyDebugPhotoChange", "imageUri + " + imageUri)
 
             val imagePickerLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.GetContent()
@@ -117,6 +132,8 @@ fun PlantEditScreen (editedPlant : Plant, currentFlag : Int) {
                             ) == PackageManager.PERMISSION_GRANTED
                         ) {
                             imagePickerLauncher.launch("image/*")
+                            flagPutExtra(context, 202)
+
                         } else {
                             val activity = context as Activity
                             ActivityCompat.requestPermissions(
@@ -124,7 +141,10 @@ fun PlantEditScreen (editedPlant : Plant, currentFlag : Int) {
                                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                                 200
                             )
+                            flagPutExtra(context, 202)
                         }
+
+
                     }
 
                 Row(
@@ -217,7 +237,7 @@ fun PlantEditScreen (editedPlant : Plant, currentFlag : Int) {
                         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
                         val editor = preferences.edit()
                         editor.apply()
-                        if (flagGet(context)!=102)
+                        if (currentFlag!=102)
                         {
                             flagPut(context, 100)
                         }
@@ -227,10 +247,32 @@ fun PlantEditScreen (editedPlant : Plant, currentFlag : Int) {
                         preferences.edit().putString("plantName", plantName).apply()
                         preferences.edit().putInt("plantType", plantType).apply()
                         preferences.edit().putString("plantSubType", plantSubType).apply()
-                        preferences.edit().putString("plantPhoto", croppedBitmap.toString()).apply()
+                        preferences.edit().putString("plantPhoto", imageUri.toString()).apply()
+
+                        Log.d ("MyDebugPhotoChange", "flagGet(context) " + flagGet(context))
+                        Log.d ("MyDebugPhotoChange", "flagGetExtra(context) " + flagGetExtra(context))
+
+                        if (flagGetExtra(context)==202)
+                        {
+                            val db: AppDatabase = AppDatabase.getInstance(context)
+                            val plantPhotoDao = db.PlantPhotoDao()
+
+
+
+                            GlobalScope.launch {
+
+                                var PlantPhotoToUpdate = plantPhotoDao.getIDByID(editedPlant.plantID)
+                                PlantPhotoToUpdate.photo = imageUri.toString()
+                                plantPhotoDao.updatePlantPhoto(PlantPhotoToUpdate)
+                                Log.d("MyDebugPhotoChange", "EditPlanScreen // PlantPhotoToUpdate = " + PlantPhotoToUpdate)
+
+                            }
+
+                            flagPutExtra(context, 0)
+                        }
+
                         val intent = Intent(context, MyPlantsActivity::class.java)
                         context.startActivity(intent)
-
 
                     },
                     modifier = Modifier

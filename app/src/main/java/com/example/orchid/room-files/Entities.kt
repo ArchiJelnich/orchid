@@ -27,5 +27,5 @@ data class Watering(
 data class PlantPhoto(
     @PrimaryKey(autoGenerate = true) var ppID: Int,
     @ColumnInfo(name = "plantID", defaultValue = "0") val plantID: Int?,
-    @ColumnInfo(name = "photo", defaultValue = "0") val photo: String?,
+    @ColumnInfo(name = "photo", defaultValue = "") var photo: String = "",
 )

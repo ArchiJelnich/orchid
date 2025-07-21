@@ -33,4 +33,12 @@ interface WateringDao {
 interface PlantPhotoDao {
     @Insert
     fun insertAllPhoto(vararg category: PlantPhoto)
+    @Query("SELECT photo FROM PlantPhoto WHERE plantID=:plantID")
+    fun getByID(plantID: Int?): String
+    @Query("SELECT * FROM PlantPhoto WHERE plantID=:plantID")
+    fun getIDByID(plantID: Int?): PlantPhoto
+    @Update
+    fun updatePlantPhoto(plantPhoto: PlantPhoto)
+    @Query("SELECT * FROM PlantPhoto")
+    fun getAll(): List<PlantPhoto>
 }
