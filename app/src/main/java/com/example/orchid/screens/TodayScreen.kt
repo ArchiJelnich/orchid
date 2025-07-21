@@ -1,6 +1,7 @@
 package com.example.orchid.screens
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -25,18 +27,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.orchid.PlantMarkedViewModel
+import com.example.orchid.PlantViewModel
 import com.example.orchid.R
+import com.example.orchid.infra.LocalDateToString
+import com.example.orchid.infra.StringToNiceString
+import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun TodayScreen () {
+fun TodayScreen (viewModel: PlantMarkedViewModel) {
 
     MaterialTheme(
     ){
@@ -44,6 +55,9 @@ fun TodayScreen () {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
+            val plants by viewModel.plantsMarked.collectAsState(initial = emptyList())
+
+
             Column(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = stringResource(R.string.header_today),
@@ -60,9 +74,10 @@ fun TodayScreen () {
                         .weight(1f)
                         .padding(16.dp)
                 ) {
-                    val plants = listOf("Rose", "Tulip", "Palm")
+                    //val plants = listOf("Rose", "Tulip", "Palm")
                     items(plants) { plant ->
-                        PlantItem(plant = plant)
+                        Log.d("My", "plant " + plant.toString())
+                        PlantItem(plant = plant.plantName, date = plant.lastWateringDate )
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
@@ -85,13 +100,29 @@ fun TodayScreen () {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PlantItem(plant : String) {
+fun PlantItem(plant : String, date : String) {
+    val context = LocalContext.current
+
+    var isToday = false
+
+    Log.d("Check", "date " + date)
+    Log.d("Check", "LocalDateToString(LocalDate.now()) " + LocalDateToString(LocalDate.now()))
+
+    if (date == LocalDateToString(LocalDate.now()))
+    {
+        isToday = true
+        Log.d("Check", "Thy are the same ")
+    }
+
+    Log.d("Check", "isToday " + isToday)
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFDFFFD6))
+            .clip(RoundedCornerShape(12.dp))
+            .background(if (isToday) Color(0xFFCBFAAE) else Color(0xFFF6DDC1))
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -115,7 +146,7 @@ fun PlantItem(plant : String) {
                 color = Color.Black
             )
             Text(
-                text = "Scheduler",
+                text = StringToNiceString(date, context),
                 fontSize = 14.sp,
                 color = Color.DarkGray
             )

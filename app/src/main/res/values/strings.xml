@@ -33,6 +33,20 @@
         <item>Sunday</item>
     </string-array>
 
+    <string name="JANUARY">January</string>
+    <string name="FEBRUARY">February</string>
+    <string name="MARCH">March</string>
+    <string name="APRIL">April</string>
+    <string name="MAY">May</string>
+    <string name="JUNE">June</string>
+    <string name="JULY">July</string>
+    <string name="AUGUST">August</string>
+    <string name="SEPTEMBER">September</string>
+    <string name="OCTOBER">October</string>
+    <string name="NOVEMBER">November</string>
+    <string name="DECEMBER">December</string>
+
+
 </resources>
 
 

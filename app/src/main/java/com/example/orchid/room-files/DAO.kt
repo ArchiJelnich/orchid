@@ -21,8 +21,14 @@ interface PlantDao {
     fun updatePlant(plant: Plant)
     @Query("UPDATE Plant SET deleteFlag = 1 WHERE plantID = :plantId")
     fun updateDeleteFlagById(plantId: Int)
+    @Query("UPDATE Plant SET marked = 1 WHERE plantID = :plantId")
+    fun updateMarkedByID(plantId: Int)
     @Query("SELECT * FROM Plant WHERE plantType=:plantType")
     fun getByType(plantType: Int?): Plant
+    @Query("SELECT * FROM Plant WHERE marked=1 AND deleteFlag=0")
+    fun getMarked(): Flow<List<Plant>>
+    @Query("SELECT * FROM Plant WHERE marked=0")
+    fun getNotMarked(): Flow<List<Plant>>
 }
 
 @Dao

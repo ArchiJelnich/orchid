@@ -105,6 +105,8 @@ class PlantEditActivity : ComponentActivity() {
                 2 -> lastWateringDate = wateringDaysOfMonth(plantSubType.toString())
             }
 
+            Log.d("lastWateringDate", "lastWateringDate " + lastWateringDate)
+
             Log.d("Mounth", "wateringDaysOfMonth " + wateringDaysOfMonth(plantSubType.toString()))
 
             val PlantToCreate = Plant(
@@ -117,7 +119,7 @@ class PlantEditActivity : ComponentActivity() {
                 deleteFlag = 0,
             )
 
-            Log.d("MyAfterDebug", "PlantToCreate onPause = " + PlantToCreate)
+            Log.d("lastWateringDate", "PlantToCreate onPause = " + PlantToCreate)
 
             GlobalScope.launch {
 
@@ -152,7 +154,7 @@ class PlantEditActivity : ComponentActivity() {
             val plantDao = db.PlantDao()
             val plantPhotoDao = db.PlantPhotoDao()
 
-            Log.d("Mounth", "wateringDaysOfMonth " + wateringDaysOfMonth(plantSubType.toString()))
+            Log.d("lastWateringDate", "lastWateringDate " + lastWateringDate)
 
             if (marked != 1)
             {
@@ -177,10 +179,10 @@ class PlantEditActivity : ComponentActivity() {
 
 
 
-
+7
             GlobalScope.launch {
 
-                Log.d("MyAfterDebug", "EditPlan : onPause // PlantToUpdate = " + PlantToUpdate)
+                Log.d("lastWateringDate", "EditPlan : onPause // PlantToUpdate = " + PlantToUpdate)
                 plantDao.updatePlant(PlantToUpdate)
 
                 //val PlantPhotoToCreate = PlantPhoto(
