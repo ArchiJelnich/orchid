@@ -21,6 +21,8 @@ interface PlantDao {
     fun updatePlant(plant: Plant)
     @Query("UPDATE Plant SET deleteFlag = 1 WHERE plantID = :plantId")
     fun updateDeleteFlagById(plantId: Int)
+    @Query("SELECT * FROM Plant WHERE plantType=:plantType")
+    fun getByType(plantType: Int?): Plant
 }
 
 @Dao

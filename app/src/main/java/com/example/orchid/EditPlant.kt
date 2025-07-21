@@ -12,6 +12,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import com.example.orchid.infra.flagGet
 import com.example.orchid.infra.flagPut
+import com.example.orchid.infra.wateringDaysAfter
+import com.example.orchid.infra.wateringDaysOfMonth
+import com.example.orchid.infra.wateringDaysWeek
 import com.example.orchid.room.AppDatabase
 import com.example.orchid.room.Plant
 import com.example.orchid.room.PlantPhoto
@@ -37,7 +40,9 @@ class PlantEditActivity : ComponentActivity() {
             plantName = "",
             plantType = 0,
             plantSubType = "",
-            lastWateringID = 0
+            lastWateringDate = "",
+            marked = 0,
+            deleteFlag = 0,
         )
 
         var plantImageLink = ""
@@ -76,6 +81,7 @@ class PlantEditActivity : ComponentActivity() {
         super.onResume()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onPause() {
         Log.d("MyDebugPhotoChange", "OnPause")
         Log.d("MyDebugPhotoChange", "flag onPause = " + flagGet(this))
@@ -90,16 +96,28 @@ class PlantEditActivity : ComponentActivity() {
             val db: AppDatabase = AppDatabase.getInstance(this)
             val plantDao = db.PlantDao()
             val plantPhotoDao = db.PlantPhotoDao()
+            var lastWateringDate = ""
+
+            when (plantType)
+            {
+                0 -> lastWateringDate= wateringDaysAfter(plantSubType.toString())
+                1 -> lastWateringDate = wateringDaysWeek(plantSubType.toString())
+                2 -> lastWateringDate = wateringDaysOfMonth(plantSubType.toString())
+            }
+
+            Log.d("Mounth", "wateringDaysOfMonth " + wateringDaysOfMonth(plantSubType.toString()))
 
             val PlantToCreate = Plant(
                 plantID = 0,
                 plantName = plantName.toString(),
                 plantType = plantType,
                 plantSubType = plantSubType.toString(),
-                lastWateringID = 0
+                lastWateringDate = lastWateringDate,
+                marked = 0,
+                deleteFlag = 0,
             )
 
-            Log.d("MyDebugPhotoChange", "PlantToCreate onPause = " + PlantToCreate)
+            Log.d("MyAfterDebug", "PlantToCreate onPause = " + PlantToCreate)
 
             GlobalScope.launch {
 
@@ -111,7 +129,7 @@ class PlantEditActivity : ComponentActivity() {
                     photo = plantPhoto.toString(),
                 )
 
-                Log.d("MyDebugPhotoChange", "PlantPhotoToCreate onPause = " + PlantPhotoToCreate)
+                Log.d("MyWeekDebug", "PlantPhotoToCreate onPause = " + PlantPhotoToCreate)
                 plantPhotoDao.insertAllPhoto(PlantPhotoToCreate)
 
 
@@ -127,19 +145,33 @@ class PlantEditActivity : ComponentActivity() {
             val plantType = preferences.getInt("plantType", 0)
             val plantSubType = preferences.getString("plantSubType", "")
             val plantID = preferences.getInt("plantID", 0)
+            val marked = preferences.getInt("marked", 0)
+            var lastWateringDate = preferences.getString("lastWateringDate", "")
             val plantPhoto = preferences.getString("plantPhoto", "")
             val db: AppDatabase = AppDatabase.getInstance(this)
             val plantDao = db.PlantDao()
             val plantPhotoDao = db.PlantPhotoDao()
 
+            Log.d("Mounth", "wateringDaysOfMonth " + wateringDaysOfMonth(plantSubType.toString()))
 
+            if (marked != 1)
+            {
+                when (plantType)
+                {
+                    0 -> lastWateringDate= wateringDaysAfter(plantSubType.toString())
+                    1 -> lastWateringDate = wateringDaysWeek(plantSubType.toString())
+                    2 -> lastWateringDate = wateringDaysOfMonth(plantSubType.toString())
+                }
+            }
 
             val PlantToUpdate = Plant(
                 plantID = plantID,
                 plantName = plantName.toString(),
                 plantType = plantType,
                 plantSubType = plantSubType.toString(),
-                lastWateringID = 0
+                lastWateringDate = lastWateringDate.toString(),
+                marked = marked,
+                deleteFlag = 0,
             )
 
 
@@ -148,7 +180,7 @@ class PlantEditActivity : ComponentActivity() {
 
             GlobalScope.launch {
 
-                Log.d("MyDebugPhotoChange", "EditPlan : onPause // PlantToUpdate = " + PlantToUpdate)
+                Log.d("MyAfterDebug", "EditPlan : onPause // PlantToUpdate = " + PlantToUpdate)
                 plantDao.updatePlant(PlantToUpdate)
 
                 //val PlantPhotoToCreate = PlantPhoto(

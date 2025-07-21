@@ -248,6 +248,11 @@ fun PlantEditScreen (editedPlant : Plant, plantImageLink: String, currentFlag : 
                         preferences.edit().putInt("plantType", plantType).apply()
                         preferences.edit().putString("plantSubType", plantSubType).apply()
                         preferences.edit().putString("plantPhoto", imageUri.toString()).apply()
+                        preferences.edit().putInt("marked", editedPlant.marked).apply()
+                        preferences.edit().putString("lastWateringDate", editedPlant.plantSubType).apply()
+
+
+
 
                         Log.d ("MyDebugPhotoChange", "flagGet(context) " + flagGet(context))
                         Log.d ("MyDebugPhotoChange", "flagGetExtra(context) " + flagGetExtra(context))
