@@ -3,6 +3,7 @@ package com.example.orchid
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.renderscript.ScriptGroup.Input
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +11,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import com.example.orchid.infra.InputChecker
 import com.example.orchid.infra.flagGet
 import com.example.orchid.infra.flagPut
 import com.example.orchid.infra.wateringDaysAfter
@@ -111,7 +113,7 @@ class PlantEditActivity : ComponentActivity() {
 
             val PlantToCreate = Plant(
                 plantID = 0,
-                plantName = plantName.toString(),
+                plantName = InputChecker(this, plantName.toString()),
                 plantType = plantType,
                 plantSubType = plantSubType.toString(),
                 lastWateringDate = lastWateringDate,
@@ -168,7 +170,7 @@ class PlantEditActivity : ComponentActivity() {
 
             val PlantToUpdate = Plant(
                 plantID = plantID,
-                plantName = plantName.toString(),
+                plantName = InputChecker(this, plantName.toString()),
                 plantType = plantType,
                 plantSubType = plantSubType.toString(),
                 lastWateringDate = lastWateringDate.toString(),
@@ -179,7 +181,7 @@ class PlantEditActivity : ComponentActivity() {
 
 
 
-7
+
             GlobalScope.launch {
 
                 Log.d("lastWateringDate", "EditPlan : onPause // PlantToUpdate = " + PlantToUpdate)

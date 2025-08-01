@@ -55,3 +55,4 @@ class PlantMarkedViewModel(private val dao: PlantDao) : ViewModel() {
     val plantsMarked: Flow<List<Plant>> = dao.getMarked()
 
 }
+

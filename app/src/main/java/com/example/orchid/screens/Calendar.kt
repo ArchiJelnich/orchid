@@ -1,6 +1,8 @@
 package com.example.orchid.screens
 
+import android.app.Application
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,40 +32,126 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import coil.compose.rememberAsyncImagePainter
 import com.example.orchid.R
+import com.example.orchid.room.AppDatabase
+import com.example.orchid.room.PlantPhoto
+import com.example.orchid.room.Watering
+import kotlinx.coroutines.launch
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import androidx.compose.foundation.Image
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
+import com.example.orchid.CalendarViewModel
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.ViewModelProvider
+import com.example.orchid.PlantMarkedViewModel
+import com.example.orchid.PlantViewModel
+import com.example.orchid.room.Plant
+import java.time.LocalDate
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarScreen() {
+fun CalendarScreen(viewModel: CalendarViewModel) {
+    val waterings by viewModel.waterings
+    //val plantPhotos by viewModel.plantPhotos
+    val db: AppDatabase = AppDatabase.getInstance(LocalContext.current)
+    val wateringDao = db.WateringDao()
+    val plantDao = db.PlantDao()
+    val plantViewModel = PlantViewModel(plantDao)
+    //val calendarViewModel =  CalendarViewModel()
+    var selectedPlant by remember { mutableStateOf<Plant?>(null) }
 
-    MaterialTheme(
-    ){
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            Box(modifier = Modifier.fillMaxSize()){
-            Column(modifier = Modifier.fillMaxSize()) {
-                Text(
-                    text = stringResource(R.string.header_calendar),
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier
-                        .align(alignment = Alignment.CenterHorizontally)
-                        .padding(top = 40.dp)
-                        .padding(bottom = 40.dp),
-                    textAlign = TextAlign.Center
-                )
-                var currentMonth by remember { mutableStateOf(YearMonth.now()) }
+    var currentMonth by remember { mutableStateOf(YearMonth.now()) }
 
+    LaunchedEffect(currentMonth) {
+        viewModel.loadWaterings(
+            currentMonth.monthValue.toString(),
+            currentMonth.year.toString(),
+            plantID = null,
+            wateringDao = wateringDao
+        )
+    }
+
+    val wateringMap = remember(waterings) {
+        waterings.groupBy { it.wateringDay.toIntOrNull() ?: -1 }
+    }
+
+    MaterialTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.fillMaxSize()) {
                 Column(modifier = Modifier.fillMaxSize()) {
+                    Text(
+                        text = stringResource(R.string.header_calendar),
+                        style = MaterialTheme.typography.headlineLarge,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = 40.dp, bottom = 40.dp),
+                        textAlign = TextAlign.Center
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .padding(start = 100.dp)
+                    ) {
+                        CalendareFilter(
+                            viewModel = plantViewModel,
+                            selectedPlant = selectedPlant,
+                            onPlantSelected = { plant ->
+                                selectedPlant = plant
+                                if (plant != null) {
+                                    viewModel.loadWaterings(
+                                        month = currentMonth.month.toString(),
+                                        year = currentMonth.year.toString(),
+                                        plantID = plant.plantID.toLong(),
+                                        wateringDao = wateringDao
+                                    )
+                                }
+                            },
+                            onClearSelected = {
+                                selectedPlant = null
+                                viewModel.loadWaterings(
+                                    month = currentMonth.month.toString(),
+                                    year = currentMonth.year.toString(),
+                                    plantID = null,
+                                    wateringDao = wateringDao
+                                )
+                            }
+                        )
+                    }
+
+
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Button(onClick = { currentMonth = currentMonth.minusMonths(1) }) {
+                        Button(onClick = { currentMonth = currentMonth.minusMonths(1)
+                            selectedPlant = null
+                            viewModel.loadWaterings(
+                                currentMonth.month.minus(1).toString(),
+                                currentMonth.year.toString(),
+                                plantID = null,
+                                wateringDao = wateringDao
+                            )}) {
                             Text("Previous")
                         }
 
@@ -74,20 +164,23 @@ fun CalendarScreen() {
 
                         Spacer(modifier = Modifier.width(16.dp))
 
-                        Button(onClick = { currentMonth = currentMonth.plusMonths(1) }) {
+                        Button(onClick = { currentMonth = currentMonth.plusMonths(1)
+                            selectedPlant = null
+                            viewModel.loadWaterings(
+                                currentMonth.month.minus(1).toString(),
+                                currentMonth.year.toString(),
+                                plantID = null,
+                                wateringDao = wateringDao
+                            )}) {
                             Text("Next")
                         }
                     }
 
                     val weekDays = listOf("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        for (day in weekDays) {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                        weekDays.forEach {
                             Text(
-                                text = day,
+                                text = it,
                                 modifier = Modifier.weight(1f),
                                 textAlign = TextAlign.Center
                             )
@@ -95,26 +188,54 @@ fun CalendarScreen() {
                     }
 
                     val daysInMonth = currentMonth.atDay(1).lengthOfMonth()
-                    val firstDayOfWeek =
-                        currentMonth.atDay(1).dayOfWeek.ordinal // Get the first day of the month
+                    val firstDayOfWeek = currentMonth.atDay(1).dayOfWeek.value % 7
 
+                    var dayCounter = 1
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        var dayCounter = 1
-                        for (week in 0..5) { // 6 rows (weeks)
+                        for (week in 0..5) {
                             Row(modifier = Modifier.fillMaxWidth()) {
-                                for (day in 0..6) { // 7 days per row
+                                for (day in 0..6) {
                                     if (week == 0 && day < firstDayOfWeek) {
                                         Spacer(modifier = Modifier.weight(1f))
                                     } else if (dayCounter <= daysInMonth) {
+                                        val eventsToday = wateringMap[dayCounter] ?: emptyList()
+                                        //val photo = eventsToday.firstOrNull()?.let {
+                                        //    plantPhotos[it.wateringPlantID]
+                                        //}
+
                                         Box(
                                             modifier = Modifier
                                                 .weight(1f)
                                                 .padding(4.dp)
                                                 .border(1.dp, Color.Black)
+                                                .heightIn(min = 75.dp)
                                                 .padding(8.dp),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            Text(text = dayCounter.toString())
+                                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                                Text(text = dayCounter.toString())
+
+                                                Row(
+                                                    modifier = Modifier.padding(top = 4.dp),
+                                                    horizontalArrangement = Arrangement.Center
+                                                ) {
+                                                    eventsToday.forEach { event ->
+                                                        //val photo = plantPhotos[event.wateringPlantID]
+                                                        //if (photo?.photo?.isNotEmpty() == true) {
+                                                        //    Image(
+                                                        //        painter = rememberAsyncImagePainter(model = photo.photo),
+                                                        //        contentDescription = null,
+                                                        //        modifier = Modifier
+                                                        //            .size(24.dp)
+                                                        //            .clip(CircleShape)
+                                                        //            .padding(end = 2.dp)
+                                                        //    )
+                                                        //} else {
+                                                            Text("•", fontSize = 24.sp, modifier = Modifier.padding(end = 2.dp))
+                                                        //}
+                                                    }
+                                                }
+                                            }
                                         }
                                         dayCounter++
                                     } else {
@@ -124,19 +245,67 @@ fun CalendarScreen() {
                             }
                         }
                     }
-
                 }
 
-            }
+
+
+
 
                 Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
+                    modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
                     BottomPanel()
                 }
-
             }
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun CalendareFilter(
+    viewModel: PlantViewModel,
+    selectedPlant: Plant?,
+    onPlantSelected: (Plant?) -> Unit,
+    onClearSelected: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val plants by viewModel.plants.collectAsState(initial = emptyList())
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            painter = painterResource(id = R.drawable.filter),
+            contentDescription = null,
+            modifier = Modifier
+                .clickable { expanded = true }
+                .size(24.dp)
+        )
+
+        Text(
+            text = selectedPlant?.plantName ?: "",
+            modifier = Modifier.padding(start = 8.dp)
+        )
+
+        if (selectedPlant != null) {
+            Icon(
+                painter = painterResource(R.drawable.filter_reset),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .clickable { onClearSelected() }
+            )
+        }
+    }
+
+    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        plants.forEach { plant ->
+            DropdownMenuItem(
+                text = { Text(plant.plantName) },
+                onClick = {
+                    expanded = false
+                    onPlantSelected(plant)
+                }
+            )
         }
     }
 }

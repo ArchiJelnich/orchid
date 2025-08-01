@@ -1,5 +1,3 @@
-import groovyjarjarantlr.build.ANTLR.compiler
-import org.apache.tools.ant.util.JavaEnvUtils.VERSION_1_8
 
 plugins {
     alias(libs.plugins.android.application)
@@ -63,21 +61,15 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("com.kizitonwose.calendar:compose:2.6.2")
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.compose)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    kapt("androidx.room:room-compiler:2.6.1")
-    implementation("io.coil-kt:coil-compose:2.2.2")
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.coil.compose)
+
 
 
 
