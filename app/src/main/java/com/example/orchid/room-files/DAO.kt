@@ -35,6 +35,8 @@ interface PlantDao {
 interface WateringDao {
     @Query("SELECT * FROM Watering")
     fun getAll(): List<Watering>
+    @Insert
+    fun insertAll(vararg watering: Watering)
 }
 
 @Dao

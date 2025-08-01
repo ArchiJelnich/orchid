@@ -6,7 +6,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun wateringDaysOfMonth(plantSubType : String): String {
+fun wateringDaysOfMonth(plantSubType : String, localDate : LocalDate): String {
 
     if (plantSubType.isEmpty())
     {
@@ -16,7 +16,7 @@ fun wateringDaysOfMonth(plantSubType : String): String {
     val daysOfMonthArray: List<String> = plantSubType.split(",")
     val daysOfMonthInt: List<Int> = daysOfMonthArray.map { it.toInt() }
 
-    var today = LocalDate.now()
+    var today = localDate
     var count = 0
     var todayDayOfMonth = today.dayOfMonth
     var lengthThisMonth = today.lengthOfMonth()

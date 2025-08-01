@@ -14,8 +14,8 @@ data class Plant(
     // 1 - day of week
     // 2 - day of mounth
     @ColumnInfo(name = "plantSubType") val plantSubType: String,
-    @ColumnInfo(name = "lastWateringDate") val lastWateringDate: String,
-    @ColumnInfo(name = "marked") val marked: Int,
+    @ColumnInfo(name = "lastWateringDate") var lastWateringDate: String,
+    @ColumnInfo(name = "marked") var marked: Int,
     // 0 - not
     // 1 - marked
     @ColumnInfo(name = "deleteFlag", defaultValue = "0") val deleteFlag: Int = 0,
@@ -26,6 +26,9 @@ data class Watering(
     @PrimaryKey(autoGenerate = true) var wID: Int,
     @ColumnInfo(name = "wateringPlantID") val wateringPlantID: Int,
     @ColumnInfo(name = "wateringDate") val wateringDate: String?,
+    @ColumnInfo(name = "wateringDay") val wateringDay: String,
+    @ColumnInfo(name = "wateringMonth") val wateringMonth: String?,
+    @ColumnInfo(name = "wateringYear") val wateringYear: String?,
 )
 
 

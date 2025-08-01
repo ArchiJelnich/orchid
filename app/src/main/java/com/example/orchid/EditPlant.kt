@@ -22,6 +22,7 @@ import com.example.orchid.screens.PlantEditScreen
 import com.example.orchid.ui.theme.OrchidTheme
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class PlantEditActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -100,14 +101,13 @@ class PlantEditActivity : ComponentActivity() {
 
             when (plantType)
             {
-                0 -> lastWateringDate= wateringDaysAfter(plantSubType.toString())
-                1 -> lastWateringDate = wateringDaysWeek(plantSubType.toString())
-                2 -> lastWateringDate = wateringDaysOfMonth(plantSubType.toString())
+                0 -> lastWateringDate= wateringDaysAfter(plantSubType.toString(), LocalDate.now())
+                1 -> lastWateringDate = wateringDaysWeek(plantSubType.toString(), LocalDate.now())
+                2 -> lastWateringDate = wateringDaysOfMonth(plantSubType.toString(), LocalDate.now())
             }
 
             Log.d("lastWateringDate", "lastWateringDate " + lastWateringDate)
 
-            Log.d("Mounth", "wateringDaysOfMonth " + wateringDaysOfMonth(plantSubType.toString()))
 
             val PlantToCreate = Plant(
                 plantID = 0,
@@ -160,9 +160,9 @@ class PlantEditActivity : ComponentActivity() {
             {
                 when (plantType)
                 {
-                    0 -> lastWateringDate= wateringDaysAfter(plantSubType.toString())
-                    1 -> lastWateringDate = wateringDaysWeek(plantSubType.toString())
-                    2 -> lastWateringDate = wateringDaysOfMonth(plantSubType.toString())
+                    0 -> lastWateringDate= wateringDaysAfter(plantSubType.toString(), LocalDate.now())
+                    1 -> lastWateringDate = wateringDaysWeek(plantSubType.toString(), LocalDate.now())
+                    2 -> lastWateringDate = wateringDaysOfMonth(plantSubType.toString(), LocalDate.now())
                 }
             }
 

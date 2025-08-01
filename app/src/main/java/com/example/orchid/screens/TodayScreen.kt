@@ -43,6 +43,14 @@ import com.example.orchid.PlantViewModel
 import com.example.orchid.R
 import com.example.orchid.infra.LocalDateToString
 import com.example.orchid.infra.StringToNiceString
+import com.example.orchid.infra.wateringDaysAfter
+import com.example.orchid.infra.wateringDaysOfMonth
+import com.example.orchid.infra.wateringDaysWeek
+import com.example.orchid.room.AppDatabase
+import com.example.orchid.room.Plant
+import com.example.orchid.room.Watering
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -77,7 +85,7 @@ fun TodayScreen (viewModel: PlantMarkedViewModel) {
                     //val plants = listOf("Rose", "Tulip", "Palm")
                     items(plants) { plant ->
                         Log.d("My", "plant " + plant.toString())
-                        PlantItem(plant = plant.plantName, date = plant.lastWateringDate )
+                        PlantItem(plant)
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
@@ -102,9 +110,9 @@ fun TodayScreen (viewModel: PlantMarkedViewModel) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PlantItem(plant : String, date : String) {
+fun PlantItem(plant : Plant) {
     val context = LocalContext.current
-
+    var date = plant.lastWateringDate
     var isToday = false
 
     Log.d("Check", "date " + date)
@@ -140,7 +148,7 @@ fun PlantItem(plant : String, date : String) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = plant,
+                text = plant.plantName,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -152,7 +160,44 @@ fun PlantItem(plant : String, date : String) {
             )
         }
         Row {
-            IconButton(onClick = { onClickEmpty() }) {
+            IconButton(onClick = {
+
+                Log.d("getAll", "Click")
+                val db: AppDatabase = AppDatabase.getInstance(context)
+                val plantDao = db.PlantDao()
+                val wateringDao = db.WateringDao()
+                var plantToUpdate = plant
+                plantToUpdate.marked = 0
+
+                when (plant.plantType)
+                {
+                    0 -> plantToUpdate.lastWateringDate = wateringDaysAfter(plant.plantSubType.toString(), LocalDate.now().plusDays(1))
+                    1 -> plantToUpdate.lastWateringDate = wateringDaysWeek(plant.plantSubType.toString(), LocalDate.now().plusDays(1))
+                    2 -> plantToUpdate.lastWateringDate = wateringDaysOfMonth(plant.plantSubType.toString(), LocalDate.now().plusDays(1))
+                }
+
+                val stringDate: List<String> = LocalDateToString(LocalDate.now()).split(".")
+
+                var wateringToAdd = Watering(
+                    wID = 0,
+                    wateringPlantID = plantToUpdate.plantID,
+                    wateringDate = LocalDateToString(LocalDate.now()),
+                    wateringDay = stringDate[0],
+                    wateringMonth = stringDate[1],
+                    wateringYear = stringDate[2]
+                )
+
+                GlobalScope.launch {
+                    plantDao.updatePlant(plantToUpdate)
+                    wateringDao.insertAll(wateringToAdd)
+                    Log.d("getAll", "plantToUpdate " + plantToUpdate)
+                    Log.d("getAll", "wateringDao " + wateringDao.getAll())
+                }
+
+
+
+
+            }) {
                 Icon(Icons.Default.Add, contentDescription = "+")
             }
         }

@@ -6,14 +6,14 @@ import androidx.annotation.RequiresApi
 import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun wateringDaysAfter(plantSubType : String): String {
+fun wateringDaysAfter(plantSubType : String, localDate : LocalDate): String {
 
     if (plantSubType.isEmpty())
     {
         return ""
     }
 
-    var today = LocalDate.now()
+    var today = localDate
 
     today = today.plusDays(plantSubType.toLong())
 

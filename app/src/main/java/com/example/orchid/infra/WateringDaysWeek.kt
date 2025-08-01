@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun wateringDaysWeek(plantSubType : String): String {
+fun wateringDaysWeek(plantSubType : String, localDate : LocalDate): String {
 
     if (plantSubType.isEmpty())
     {
@@ -19,7 +19,7 @@ fun wateringDaysWeek(plantSubType : String): String {
 
 
 
-    var today = LocalDate.now()
+    var today = localDate
     var count = 0
 
 
