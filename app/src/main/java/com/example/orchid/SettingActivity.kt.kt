@@ -8,11 +8,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import com.example.orchid.infra.localeChecker
 import com.example.orchid.ui.theme.OrchidTheme
 
 class SettingActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+        localeChecker(this)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {

@@ -14,6 +14,7 @@ import androidx.compose.material3.Surface
 import com.example.orchid.infra.InputChecker
 import com.example.orchid.infra.flagGet
 import com.example.orchid.infra.flagPut
+import com.example.orchid.infra.localeChecker
 import com.example.orchid.infra.wateringDaysAfter
 import com.example.orchid.infra.wateringDaysOfMonth
 import com.example.orchid.infra.wateringDaysWeek
@@ -29,6 +30,7 @@ import java.time.LocalDate
 class PlantEditActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+        localeChecker(this)
         super.onCreate(savedInstanceState)
         val db: AppDatabase = AppDatabase.getInstance(this)
         val plantDao = db.PlantDao()

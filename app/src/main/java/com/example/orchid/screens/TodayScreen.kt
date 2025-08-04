@@ -90,15 +90,7 @@ fun TodayScreen (viewModel: PlantMarkedViewModel) {
                     }
                 }
 
-                 Button(
-                    onClick = {
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                 ) {
-                    Text(stringResource(R.string.common_add))
-                 }
+
 
                 BottomPanel()
 

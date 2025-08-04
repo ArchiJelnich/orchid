@@ -1,0 +1,63 @@
+<resources>
+    <string name="app_name">Оранжерея</string>
+    <string name="header_settings">Настройки</string>
+    <string name="header_garden">Сад</string>
+    <string name="header_calendar">Календарь</string>
+    <string name="header_today">Сегодня</string>
+    <string name="settings_eng">англ</string>
+    <string name="settings_ru">рус</string>
+    <string name="settings_on">вкл</string>
+    <string name="settings_off">выкл</string>
+    <string name="settings_lang">Язык</string>
+    <string name="settings_notification">Уведомления</string>
+    <string name="common_ok">Ок</string>
+    <string name="common_add">Добавить</string>
+    <string name="common_cancel">Отменить</string>
+    <string name="plant_name">Имя</string>
+    <string name="plant_each_day">Введите дни</string>
+    <string name="plant_delete">Удалить растение?</string>
+    <string name="plant_planty">Цветуля</string>
+
+    <string-array name="plant_watering_type">
+        <item>Каждые * дней</item>
+        <item>По дням недели</item>
+        <item>По дням в месяце</item>
+    </string-array>
+
+    <string-array name="week_days">
+        <item>Понедельник</item>
+        <item>Вторник</item>
+        <item>Среда</item>
+        <item>Четверг</item>
+        <item>Пятница</item>
+        <item>Суббота</item>
+        <item>Восресенье</item>
+    </string-array>
+
+    <string-array name="week_days_short">
+        <item>Пн</item>
+        <item>Вт</item>
+        <item>Ср</item>
+        <item>Чт</item>
+        <item>Пт</item>
+        <item>Сб</item>
+        <item>Вс</item>
+    </string-array>
+
+    <string name="JANUARY">Январь</string>
+    <string name="FEBRUARY">Февраль</string>
+    <string name="MARCH">Март</string>
+    <string name="APRIL">Апрель</string>
+    <string name="MAY">Май</string>
+    <string name="JUNE">Июнь</string>
+    <string name="JULY">Июль</string>
+    <string name="AUGUST">Август</string>
+    <string name="SEPTEMBER">Сентябрь</string>
+    <string name="OCTOBER">Октябрь</string>
+    <string name="NOVEMBER">Ноябрь</string>
+    <string name="DECEMBER">Декабрь</string>
+
+</resources>
+
+
+

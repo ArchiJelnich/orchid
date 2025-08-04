@@ -21,6 +21,7 @@ import com.example.orchid.ui.theme.OrchidTheme
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModelProvider
+import com.example.orchid.infra.localeChecker
 import com.example.orchid.room.WateringDao
 import kotlinx.coroutines.GlobalScope
 import java.time.Month
@@ -29,6 +30,7 @@ import java.time.Month
 class CalendarActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+        localeChecker(this)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val calendarViewModel = CalendarViewModel()

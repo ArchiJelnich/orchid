@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.lifecycle.ViewModel
+import com.example.orchid.infra.localeChecker
 import com.example.orchid.room.AppDatabase
 import com.example.orchid.room.Plant
 import com.example.orchid.room.PlantDao
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 class MyPlantsActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+        localeChecker(this)
         super.onCreate(savedInstanceState)
         val db: AppDatabase = AppDatabase.getInstance(this)
         val plantDao = db.PlantDao()

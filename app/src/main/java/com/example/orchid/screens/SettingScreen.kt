@@ -24,9 +24,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.orchid.infra.loadLanguage
+import com.example.orchid.infra.saveLanguage
+import com.example.orchid.infra.setAppLocale
 import com.example.orchid.screens.BottomPanel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -36,6 +40,13 @@ fun SettingsScreen() {
     var statsLocaleBool = true
     var statsThemeBool = true
     var isNotification by remember { mutableStateOf(statsThemeBool) }
+    val context = LocalContext.current
+    val startLocale = loadLanguage(context)
+    if (startLocale != "RU")
+    {
+        statsLocaleBool = false
+    }
+
 
     MaterialTheme(
     ){
@@ -73,6 +84,10 @@ fun SettingsScreen() {
                         if (isRussian) {
                             locale = "RU"
                         }
+
+                        setAppLocale(context, locale)
+                        saveLanguage(context, locale)
+
                     }
                 )
                 Text(text = if (isRussian)

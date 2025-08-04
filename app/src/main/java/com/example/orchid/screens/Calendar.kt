@@ -67,6 +67,7 @@ import com.example.orchid.PlantMarkedViewModel
 import com.example.orchid.PlantViewModel
 import com.example.orchid.room.Plant
 import java.time.LocalDate
+import java.time.Month
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -80,8 +81,9 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
     val plantViewModel = PlantViewModel(plantDao)
     //val calendarViewModel =  CalendarViewModel()
     var selectedPlant by remember { mutableStateOf<Plant?>(null) }
-
+    val context = LocalContext.current
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
+
 
     LaunchedEffect(currentMonth) {
         viewModel.loadWaterings(
@@ -157,8 +159,25 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
 
                         Spacer(modifier = Modifier.width(16.dp))
 
+                        var niceMonth = when (currentMonth.month) {
+                            Month.JANUARY -> context.getString(R.string.JANUARY)
+                            Month.FEBRUARY -> context.getString(R.string.FEBRUARY)
+                            Month.MARCH -> context.getString(R.string.MARCH)
+                            Month.APRIL -> context.getString(R.string.APRIL)
+                            Month.MAY -> context.getString(R.string.MAY)
+                            Month.JUNE -> context.getString(R.string.JUNE)
+                            Month.JULY -> context.getString(R.string.JULY)
+                            Month.AUGUST -> context.getString(R.string.AUGUST)
+                            Month.SEPTEMBER -> context.getString(R.string.SEPTEMBER)
+                            Month.OCTOBER -> context.getString(R.string.OCTOBER)
+                            Month.NOVEMBER -> context.getString(R.string.NOVEMBER)
+                            Month.DECEMBER -> context.getString(R.string.DECEMBER)
+                            else -> TODO()
+                        }
+
                         Text(
-                            text = currentMonth.format(DateTimeFormatter.ofPattern("MMMM yyyy")),
+
+                            text = niceMonth + " " + currentMonth.year.toString(),
                             fontSize = 20.sp
                         )
 
@@ -176,7 +195,7 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
                         }
                     }
 
-                    val weekDays = listOf("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")
+                    val weekDays = context.resources.getStringArray(R.array.week_days_short)
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                         weekDays.forEach {
                             Text(

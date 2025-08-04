@@ -34,6 +34,16 @@
         <item>Sunday</item>
     </string-array>
 
+    <string-array name="week_days_short">
+        <item>Mon</item>
+        <item>Tues</item>
+        <item>Wed</item>
+        <item>Thur</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
+
     <string name="JANUARY">January</string>
     <string name="FEBRUARY">February</string>
     <string name="MARCH">March</string>
