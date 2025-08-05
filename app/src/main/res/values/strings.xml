@@ -16,6 +16,7 @@
     <string name="plant_name">Name</string>
     <string name="plant_each_day">Type days</string>
     <string name="plant_delete">Delete plant?</string>
+    <string name="plant_delete_all">Delete all plants?</string>
     <string name="plant_planty">Planty</string>
 
     <string-array name="plant_watering_type">

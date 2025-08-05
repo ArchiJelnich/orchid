@@ -16,6 +16,7 @@
     <string name="plant_name">Имя</string>
     <string name="plant_each_day">Введите дни</string>
     <string name="plant_delete">Удалить растение?</string>
+    <string name="plant_delete_all">Удалить все растения?</string>
     <string name="plant_planty">Цветуля</string>
 
     <string-array name="plant_watering_type">

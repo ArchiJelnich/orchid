@@ -10,11 +10,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -24,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -31,7 +36,10 @@ import androidx.compose.ui.unit.dp
 import com.example.orchid.infra.loadLanguage
 import com.example.orchid.infra.saveLanguage
 import com.example.orchid.infra.setAppLocale
+import com.example.orchid.room.AppDatabase
 import com.example.orchid.screens.BottomPanel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -136,7 +144,19 @@ fun SettingsScreen() {
                     ShowPicker()
                 }
              }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 20.dp)
+                        .padding(start = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    DeleteAllWithDialog()
+                }
+
             }
+
+
 
                 Box(
                     modifier = Modifier
@@ -172,4 +192,57 @@ fun ShowPicker(){
         )
     }
 
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun DeleteAllWithDialog() {
+    val context = LocalContext.current
+    var showDialog by remember { mutableStateOf(false) }
+
+    Button(
+        onClick = {
+            showDialog = true
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+    ) {
+        Text(stringResource(R.string.plant_delete_all))
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(stringResource(R.string.plant_delete_all)) },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text(stringResource(R.string.common_cancel))
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDialog = false
+
+                    val db: AppDatabase = AppDatabase.getInstance(context)
+                    val wateringDao = db.WateringDao()
+                    val plantDao = db.PlantDao()
+                    val plantPhotoDao = db.PlantPhotoDao()
+
+                    GlobalScope.launch  {
+                        wateringDao.deleteAll()
+                        plantDao.deleteAll()
+                        plantPhotoDao.deleteAll()
+                    }
+
+
+
+                }) {
+                    Text(stringResource(R.string.common_ok))
+                }
+            },
+
+            )
+    }
 }
