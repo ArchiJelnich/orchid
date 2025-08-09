@@ -19,6 +19,9 @@
     <string name="plant_delete_all">Delete all plants?</string>
     <string name="plant_planty">Planty</string>
 
+    <string name="not_title">It\'s your Orchid!</string>
+    <string name="not_message">Some plant need your attention</string>
+
     <string-array name="plant_watering_type">
         <item>Each * days</item>
         <item>Days of week</item>

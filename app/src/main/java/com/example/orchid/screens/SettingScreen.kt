@@ -2,6 +2,8 @@ package com.example.orchid
 
 import android.icu.util.Calendar
 import android.os.Build
+import android.preference.PreferenceManager
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +24,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.orchid.infra.loadLanguage
+import com.example.orchid.infra.localeChecker
 import com.example.orchid.infra.saveLanguage
 import com.example.orchid.infra.setAppLocale
 import com.example.orchid.room.AppDatabase
@@ -46,7 +50,18 @@ import kotlinx.coroutines.launch
 fun SettingsScreen() {
 
     var statsLocaleBool = true
-    var statsThemeBool = true
+
+    val preferences = PreferenceManager.getDefaultSharedPreferences(LocalContext.current)
+    val settingNotificationFlag = preferences.getInt("setting_notification", 0)
+    Log.d("MyTime", "settingNotificationFlag" + settingNotificationFlag.toString())
+    var statsThemeBool = false
+
+    if (settingNotificationFlag==1)
+    {
+        statsThemeBool = true
+    }
+
+
     var isNotification by remember { mutableStateOf(statsThemeBool) }
     val context = LocalContext.current
     val startLocale = loadLanguage(context)
@@ -121,10 +136,16 @@ fun SettingsScreen() {
                     checked = isNotification,
                     onCheckedChange = {
                         isNotification = it
-                        var notification = "on"
+
+
 
                         if (isNotification){
-                            notification = "off"
+                            preferences.edit().putInt("setting_notification", 1).apply()
+                            Log.d("MyTime", "Stage X " + preferences.getInt("setting_notification", 0))
+                        }
+                        else{
+                            preferences.edit().putInt("setting_notification", 0).apply()
+                            Log.d("MyTime", "Stage Y " + preferences.getInt("setting_notification", 0))
                         }
 
 
@@ -174,12 +195,25 @@ fun SettingsScreen() {
 @Composable
 fun ShowPicker(){
 
+    val context = LocalContext.current
+    val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+
     val currentTime = Calendar.getInstance()
     val timePickerState = rememberTimePickerState(
-        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
-        initialMinute = currentTime.get(Calendar.MINUTE),
+        initialHour = preferences.getInt("notification_hour", currentTime.get(Calendar.HOUR_OF_DAY)),
+        initialMinute = preferences.getInt("notification_minute", currentTime.get(Calendar.MINUTE)),
         is24Hour = true,
     )
+
+    LaunchedEffect(timePickerState.hour, timePickerState.minute) {
+        preferences.edit()
+            .putInt("notification_hour", timePickerState.hour)
+            .putInt("notification_minute", timePickerState.minute)
+            .apply()
+        //Log.d("MyTime", timePickerState.hour.toString())
+        //Log.d("MyTime", timePickerState.minute.toString())
+
+    }
 
     Box(
         modifier = Modifier

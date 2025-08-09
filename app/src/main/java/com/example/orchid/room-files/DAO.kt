@@ -31,6 +31,8 @@ interface PlantDao {
     fun getNotMarked(): Flow<List<Plant>>
     @Query("DELETE FROM Plant")
     fun deleteAll()
+    @Query("SELECT COUNT (plantID) FROM Plant WHERE marked=1 AND deleteFlag=0")
+    fun getCount(): Int
 }
 
 @Dao

@@ -2,6 +2,7 @@ package com.example.orchid
 
 import android.os.Build
 import android.os.Bundle
+import android.preference.PreferenceManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -24,5 +25,16 @@ class SettingActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val NotificationHour = preferences.getInt("notification_hour", 0)
+        val NotificationMinute = preferences.getInt("notification_minute", 0)
+
+
+
+        AlarmHelper.setDailyAlarm(this, NotificationHour, NotificationMinute)
     }
 }

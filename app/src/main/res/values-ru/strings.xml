@@ -19,6 +19,11 @@
     <string name="plant_delete_all">Удалить все растения?</string>
     <string name="plant_planty">Цветуля</string>
 
+    <string name="not_title">Это ваша Оранжерея!</string>
+    <string name="not_message">Некоторым цветам нужно ваше внимание</string>
+
+
+
     <string-array name="plant_watering_type">
         <item>Каждые * дней</item>
         <item>По дням недели</item>
