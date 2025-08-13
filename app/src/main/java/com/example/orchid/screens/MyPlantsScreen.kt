@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
@@ -66,7 +65,6 @@ fun MyPlantsScreen (viewModel: PlantViewModel) {
         ) {
 
             val plants by viewModel.plants.collectAsState(initial = emptyList())
-            ///val plants = listOf("Rose", "Tulip", "Palm") //
 
             Column(modifier = Modifier.fillMaxSize()) {
                 Text(
@@ -147,7 +145,7 @@ fun TodayPlantItem(plant : Plant) {
                 color = Color.Black
             )
             Text(
-                text = "Next watering:",
+                text = stringResource(R.string.plant_next_watering) + " " + plant.lastWateringDate,
                 fontSize = 14.sp,
                 color = Color.DarkGray
             )
@@ -158,7 +156,6 @@ fun TodayPlantItem(plant : Plant) {
 
             IconButton(onClick = {
                 val intent = Intent(context, PlantEditActivity::class.java)
-
                 val preferences = PreferenceManager.getDefaultSharedPreferences(context)
                 val editor = preferences.edit()
                 editor.apply()
@@ -206,14 +203,6 @@ fun DeleteIconWithDialog(passedID : Int) {
                         val plantDao = db.PlantDao()
                         plantDao.updateDeleteFlagById(passedID)
                     }
-
-                    //val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-                    //val editor = preferences.edit()
-                    //editor.apply()
-                    //flagPut(context, 500)
-                    //val intent = Intent(context, SettingActivity::class.java)
-                    //preferences.edit().putInt("cID", passedID).apply()
-                    //context.startActivity(intent)
 
                 }) {
                     Text(stringResource(R.string.common_ok))

@@ -7,7 +7,7 @@ import android.content.Context
 import android.os.Build
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
-import com.example.orchid.infra.CheckToMark
+import com.example.orchid.infra.checkToMark
 import com.example.orchid.infra.localeChecker
 import com.example.orchid.room.AppDatabase
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +25,7 @@ class WidgetProvider : AppWidgetProvider() {
 
         CoroutineScope(Dispatchers.IO).launch {
             localeChecker(context)
-            CheckToMark(context)
+            checkToMark(context)
             val db = AppDatabase.getInstance(context)
             val count = db.PlantDao().getCount()
             withContext(Dispatchers.Main) {

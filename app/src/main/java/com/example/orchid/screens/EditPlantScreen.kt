@@ -10,7 +10,6 @@ import android.net.Uri
 import android.os.Build
 import android.preference.PreferenceManager
 import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -63,26 +62,20 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.example.orchid.MyPlantsActivity
 import com.example.orchid.R
-import com.example.orchid.infra.flagGet
 import com.example.orchid.infra.flagGetExtra
 import com.example.orchid.infra.flagPut
 import com.example.orchid.infra.flagPutExtra
 import com.example.orchid.room.AppDatabase
 import com.example.orchid.room.Plant
-import com.example.orchid.room.PlantPhoto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.net.URI
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PlantEditScreen (editedPlant : Plant, plantImageLink: String, currentFlag : Int) {
-
-
-
 
     MaterialTheme(
     ){
@@ -91,21 +84,10 @@ fun PlantEditScreen (editedPlant : Plant, plantImageLink: String, currentFlag : 
             color = MaterialTheme.colorScheme.background
         ) {
 
-            Log.d("MyDebugPhoto", "plantImageLink + " + plantImageLink)
-
-
             val defUri = plantImageLink.toUri()
-
-
-
             val context = LocalContext.current
-
-
-
             var imageUri by remember { mutableStateOf<Uri?>(defUri) }
             var croppedBitmap by remember { mutableStateOf<Bitmap?>(null) }
-
-            Log.d("MyDebugPhotoChange", "imageUri + " + imageUri)
 
             val imagePickerLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.GetContent()
@@ -173,9 +155,9 @@ fun PlantEditScreen (editedPlant : Plant, plantImageLink: String, currentFlag : 
                     }
                 }
 
-                var def_plantName=""
-                var def_plantType=0
-                var def_plantSubType=""
+                var defPlantName=""
+                var defPlantType=0
+                var defPlantSubtype=""
 
                 val preferences = PreferenceManager.getDefaultSharedPreferences(context)
                 val editor = preferences.edit()
@@ -184,23 +166,19 @@ fun PlantEditScreen (editedPlant : Plant, plantImageLink: String, currentFlag : 
 
                 if (currentFlag==102)
                 {
-                    def_plantName=editedPlant.plantName
-                    def_plantType=editedPlant.plantType
-                    def_plantSubType=editedPlant.plantSubType
+                    defPlantName=editedPlant.plantName
+                    defPlantType=editedPlant.plantType
+                    defPlantSubtype=editedPlant.plantSubType
                     preferences.edit().putInt("plantID", editedPlant.plantID).apply()
-
-                    //editedPlant.plantID?.let { preferences.edit().putInt("plantID", it).apply() }
                 }
 
 
 
-                var plantName by remember { mutableStateOf(def_plantName) }
-                var plantType by remember { mutableStateOf(def_plantType) }
-                var plantSubType by remember { mutableStateOf(def_plantSubType) }
+                var plantName by remember { mutableStateOf(defPlantName) }
+                var plantType by remember { mutableStateOf(defPlantType) }
+                var plantSubType by remember { mutableStateOf(defPlantSubtype) }
 
 
-                //Log.d("MyDebug", "plantType + " + plantType)
-                //Log.d("MyDebug", "plantSubType + " + plantSubType)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -236,8 +214,6 @@ fun PlantEditScreen (editedPlant : Plant, plantImageLink: String, currentFlag : 
                 Button(
                     onClick = {
 
-                        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-                        val editor = preferences.edit()
                         editor.apply()
                         if (currentFlag!=102)
                         {
@@ -254,11 +230,6 @@ fun PlantEditScreen (editedPlant : Plant, plantImageLink: String, currentFlag : 
                         preferences.edit().putString("lastWateringDate", editedPlant.lastWateringDate).apply()
 
 
-
-
-                        Log.d ("MyDebugPhotoChange", "flagGet(context) " + flagGet(context))
-                        Log.d ("MyDebugPhotoChange", "flagGetExtra(context) " + flagGetExtra(context))
-
                         if (flagGetExtra(context)==202)
                         {
                             val db: AppDatabase = AppDatabase.getInstance(context)
@@ -268,10 +239,9 @@ fun PlantEditScreen (editedPlant : Plant, plantImageLink: String, currentFlag : 
 
                             GlobalScope.launch {
 
-                                var PlantPhotoToUpdate = plantPhotoDao.getIDByID(editedPlant.plantID)
-                                PlantPhotoToUpdate.photo = imageUri.toString()
-                                plantPhotoDao.updatePlantPhoto(PlantPhotoToUpdate)
-                                Log.d("MyDebugPhotoChange", "EditPlanScreen // PlantPhotoToUpdate = " + PlantPhotoToUpdate)
+                                val plantPhotoToUpdate = plantPhotoDao.getIDByID(editedPlant.plantID)
+                                plantPhotoToUpdate.photo = imageUri.toString()
+                                plantPhotoDao.updatePlantPhoto(plantPhotoToUpdate)
 
                             }
 
@@ -331,9 +301,7 @@ fun SmartPicker(plantType: Int,
     val selectedWeekDays = remember { initialWeekDays }
     val selectedMonthDays = remember { initialMonthDays }
 
-    var selectedAdditionalInfo by remember { mutableStateOf(plantSubType) }
     val options = context.resources.getStringArray(R.array.plant_watering_type)
-    val selectedOption by remember { mutableStateOf(options[0]) }
     var text by remember { mutableStateOf("") }
 
 

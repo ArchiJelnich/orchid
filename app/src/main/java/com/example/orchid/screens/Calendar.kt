@@ -1,8 +1,6 @@
 package com.example.orchid.screens
 
-import android.app.Application
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +18,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,61 +29,40 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
-import coil.compose.rememberAsyncImagePainter
 import com.example.orchid.R
 import com.example.orchid.room.AppDatabase
-import com.example.orchid.room.PlantPhoto
-import com.example.orchid.room.Watering
-import kotlinx.coroutines.launch
 import java.time.YearMonth
-import java.time.format.DateTimeFormatter
 import androidx.compose.foundation.Image
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
 import com.example.orchid.CalendarViewModel
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.lifecycle.ViewModelProvider
-import com.example.orchid.PlantMarkedViewModel
 import com.example.orchid.PlantViewModel
 import com.example.orchid.room.Plant
-import java.time.LocalDate
 import java.time.Month
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarScreen(viewModel: CalendarViewModel) {
-    val waterings by viewModel.waterings
-    //val plantPhotos by viewModel.plantPhotos
+    val watering by viewModel.watering
     val db: AppDatabase = AppDatabase.getInstance(LocalContext.current)
     val wateringDao = db.WateringDao()
     val plantDao = db.PlantDao()
     val plantViewModel = PlantViewModel(plantDao)
-    //val calendarViewModel =  CalendarViewModel()
     var selectedPlant by remember { mutableStateOf<Plant?>(null) }
     val context = LocalContext.current
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
 
 
     LaunchedEffect(currentMonth) {
-        viewModel.loadWaterings(
+        viewModel.loadWatering(
             currentMonth.monthValue.toString(),
             currentMonth.year.toString(),
             plantID = null,
@@ -94,8 +70,8 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
         )
     }
 
-    val wateringMap = remember(waterings) {
-        waterings.groupBy { it.wateringDay.toIntOrNull() ?: -1 }
+    val wateringMap = remember(watering) {
+        watering.groupBy { it.wateringDay.toIntOrNull() ?: -1 }
     }
 
     MaterialTheme {
@@ -115,13 +91,13 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
                         modifier = Modifier
                             .padding(start = 100.dp)
                     ) {
-                        CalendareFilter(
+                        сalendarFilter(
                             viewModel = plantViewModel,
                             selectedPlant = selectedPlant,
                             onPlantSelected = { plant ->
                                 selectedPlant = plant
                                 if (plant != null) {
-                                    viewModel.loadWaterings(
+                                    viewModel.loadWatering(
                                         month = currentMonth.month.toString(),
                                         year = currentMonth.year.toString(),
                                         plantID = plant.plantID.toLong(),
@@ -131,7 +107,7 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
                             },
                             onClearSelected = {
                                 selectedPlant = null
-                                viewModel.loadWaterings(
+                                viewModel.loadWatering(
                                     month = currentMonth.month.toString(),
                                     year = currentMonth.year.toString(),
                                     plantID = null,
@@ -148,13 +124,13 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
                     ) {
                         Button(onClick = { currentMonth = currentMonth.minusMonths(1)
                             selectedPlant = null
-                            viewModel.loadWaterings(
+                            viewModel.loadWatering(
                                 currentMonth.month.minus(1).toString(),
                                 currentMonth.year.toString(),
                                 plantID = null,
                                 wateringDao = wateringDao
                             )}) {
-                            Text("Previous")
+                            Text("<")
                         }
 
                         Spacer(modifier = Modifier.width(16.dp))
@@ -172,7 +148,7 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
                             Month.OCTOBER -> context.getString(R.string.OCTOBER)
                             Month.NOVEMBER -> context.getString(R.string.NOVEMBER)
                             Month.DECEMBER -> context.getString(R.string.DECEMBER)
-                            else -> TODO()
+                            else -> ""
                         }
 
                         Text(
@@ -185,13 +161,13 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
 
                         Button(onClick = { currentMonth = currentMonth.plusMonths(1)
                             selectedPlant = null
-                            viewModel.loadWaterings(
+                            viewModel.loadWatering(
                                 currentMonth.month.minus(1).toString(),
                                 currentMonth.year.toString(),
                                 plantID = null,
                                 wateringDao = wateringDao
                             )}) {
-                            Text("Next")
+                            Text(">")
                         }
                     }
 
@@ -218,9 +194,7 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
                                         Spacer(modifier = Modifier.weight(1f))
                                     } else if (dayCounter <= daysInMonth) {
                                         val eventsToday = wateringMap[dayCounter] ?: emptyList()
-                                        //val photo = eventsToday.firstOrNull()?.let {
-                                        //    plantPhotos[it.wateringPlantID]
-                                        //}
+
 
                                         Box(
                                             modifier = Modifier
@@ -239,19 +213,9 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
                                                     horizontalArrangement = Arrangement.Center
                                                 ) {
                                                     eventsToday.forEach { event ->
-                                                        //val photo = plantPhotos[event.wateringPlantID]
-                                                        //if (photo?.photo?.isNotEmpty() == true) {
-                                                        //    Image(
-                                                        //        painter = rememberAsyncImagePainter(model = photo.photo),
-                                                        //        contentDescription = null,
-                                                        //        modifier = Modifier
-                                                        //            .size(24.dp)
-                                                        //            .clip(CircleShape)
-                                                        //            .padding(end = 2.dp)
-                                                        //    )
-                                                        //} else {
+
                                                             Text("•", fontSize = 24.sp, modifier = Modifier.padding(end = 2.dp))
-                                                        //}
+
                                                     }
                                                 }
                                             }
@@ -282,7 +246,7 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendareFilter(
+fun сalendarFilter(
     viewModel: PlantViewModel,
     selectedPlant: Plant?,
     onPlantSelected: (Plant?) -> Unit,

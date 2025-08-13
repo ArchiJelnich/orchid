@@ -26,31 +26,6 @@ class MyPlantsActivity : ComponentActivity() {
         val plantDao = db.PlantDao()
         val plantViewModel = PlantViewModel(plantDao)
 
-      /*  GlobalScope.launch  {
-            val plant = Plant(
-                plantID = 0,
-                plantName = "Rose",
-                plantType = 0,
-                plantSubType = 0,
-                lastWateringID = 0,
-            )
-            val plant2 = Plant(
-                plantID = 0,
-                plantName = "RoseWhite",
-                plantType = 0,
-                plantSubType = 0,
-                lastWateringID = 0,
-            )
-
-            plantDao.insertAll(plant)
-            plantDao.insertAll(plant2)
-        }
-
-*/
-
-
-
-
 
 
         enableEdgeToEdge()

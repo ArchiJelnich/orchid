@@ -42,9 +42,9 @@ interface WateringDao {
     @Insert
     fun insertAll(vararg watering: Watering)
     @Query("SELECT * FROM Watering WHERE wateringMonth = :month AND wateringYear = :year")
-    suspend fun getWateringsForMonth(month: String, year: String): List<Watering>
+    suspend fun getWateringForMonth(month: String, year: String): List<Watering>
     @Query("SELECT * FROM Watering WHERE wateringPlantID = :plantId AND wateringYear = :year AND wateringMonth = :month")
-    suspend fun getWateringsID(year: String, month: String, plantId: Int): List<Watering>
+    suspend fun getWateringID(year: String, month: String, plantId: Int): List<Watering>
     @Query("DELETE FROM Watering")
     fun deleteAll()
 }
@@ -61,8 +61,6 @@ interface PlantPhotoDao {
     fun updatePlantPhoto(plantPhoto: PlantPhoto)
     @Query("SELECT * FROM PlantPhoto")
     fun getAll(): List<PlantPhoto>
-    @Query("SELECT * FROM PlantPhoto WHERE plantID IN (:plantIds)")
-    suspend fun getPhotosForPlants(plantIds: List<Int>): List<PlantPhoto>
     @Query("DELETE FROM PlantPhoto")
     fun deleteAll()
 }

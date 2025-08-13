@@ -18,6 +18,9 @@
     <string name="plant_delete">Delete plant?</string>
     <string name="plant_delete_all">Delete all plants?</string>
     <string name="plant_planty">Planty</string>
+    <string name="plant_next_watering">Next watering:</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
 
     <string name="not_title">It\'s your Orchid!</string>
     <string name="not_message">Some plant need your attention</string>

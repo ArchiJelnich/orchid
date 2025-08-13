@@ -1,9 +1,7 @@
 package com.example.orchid
 
-import android.app.Application
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,20 +9,14 @@ import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.orchid.room.AppDatabase
-import com.example.orchid.room.PlantPhoto
 import com.example.orchid.room.Watering
 import com.example.orchid.screens.CalendarScreen
 import com.example.orchid.ui.theme.OrchidTheme
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.State
-import androidx.lifecycle.ViewModelProvider
 import com.example.orchid.infra.localeChecker
 import com.example.orchid.room.WateringDao
 import kotlinx.coroutines.GlobalScope
-import java.time.Month
 
 
 class CalendarActivity : ComponentActivity() {
@@ -47,17 +39,15 @@ class CalendarActivity : ComponentActivity() {
 
 class CalendarViewModel() {
 
-
-
-    private val _waterings = mutableStateOf<List<Watering>>(emptyList())
-    val waterings: State<List<Watering>> = _waterings
+    private val _watering = mutableStateOf<List<Watering>>(emptyList())
+    val watering: State<List<Watering>> = _watering
 
 
 
-    fun loadWaterings(month: String, year: String, plantID : Long?, wateringDao : WateringDao) {
+    fun loadWatering(month: String, year: String, plantID : Long?, wateringDao : WateringDao) {
         GlobalScope.launch {
 
-            var new_month = when (month) {
+            val newMonth = when (month) {
                 "JANUARY" -> "1"
                 "FEBRUARY" -> "2"
                 "MARCH" -> "3"
@@ -74,21 +64,14 @@ class CalendarViewModel() {
             }
 
 
-
-
-            Log.d("MyWat", "m " + new_month)
-            Log.d("MyWat", "year " + year)
-
             if (plantID == null) {
-                val events = wateringDao.getWateringsForMonth(new_month, year)
-                _waterings.value = events
-                Log.d("MyWat", "events  getWateringsForMonth" + events)
+                val events = wateringDao.getWateringForMonth(newMonth, year)
+                _watering.value = events
             }
             else
             {
-                val events = wateringDao.getWateringsID(year, new_month, plantID.toInt())
-                Log.d("MyWat", "events  getWateringsForMonthAndID" + events)
-                _waterings.value = events
+                val events = wateringDao.getWateringID(year, newMonth, plantID.toInt())
+                _watering.value = events
             }
 
 

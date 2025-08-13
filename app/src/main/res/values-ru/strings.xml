@@ -18,6 +18,9 @@
     <string name="plant_delete">Удалить растение?</string>
     <string name="plant_delete_all">Удалить все растения?</string>
     <string name="plant_planty">Цветуля</string>
+    <string name="plant_next_watering">Следующий полив:</string>
+    <string name="previous">Предыдущий</string>
+    <string name="next">Следующий</string>
 
     <string name="not_title">Это ваша Оранжерея!</string>
     <string name="not_message">Некоторым цветам нужно ваше внимание</string>

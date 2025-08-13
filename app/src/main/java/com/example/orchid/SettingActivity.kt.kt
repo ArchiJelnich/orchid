@@ -30,11 +30,11 @@ class SettingActivity : ComponentActivity() {
     override fun onPause() {
         super.onPause()
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val NotificationHour = preferences.getInt("notification_hour", 0)
-        val NotificationMinute = preferences.getInt("notification_minute", 0)
+        val notificationHour = preferences.getInt("notification_hour", 0)
+        val notificationMinute = preferences.getInt("notification_minute", 0)
 
 
 
-        AlarmHelper.setDailyAlarm(this, NotificationHour, NotificationMinute)
+        AlarmHelper.setDailyAlarm(this, notificationHour, notificationMinute)
     }
 }

@@ -9,15 +9,15 @@ import java.time.LocalDate
 fun wateringDaysAfter(plantSubType : String, localDate : LocalDate): String {
 
     if (plantSubType.isEmpty())
-    {
-        return ""
-    }
+        {
+            return ""
+        }
 
     var today = localDate
 
     today = today.plusDays(plantSubType.toLong())
 
-    Log.d("MyAfterDebug", "LocalDateToString(today) " + LocalDateToString(today))
-    return LocalDateToString(today)
+    Log.d("MyAfterDebug", "LocalDateToString(today) " + localDateToString(today))
+    return localDateToString(today)
 
 }

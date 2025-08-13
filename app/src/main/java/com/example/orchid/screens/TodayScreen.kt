@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,10 +38,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.orchid.PlantMarkedViewModel
-import com.example.orchid.PlantViewModel
 import com.example.orchid.R
-import com.example.orchid.infra.LocalDateToString
-import com.example.orchid.infra.StringToNiceString
+import com.example.orchid.infra.localDateToString
+import com.example.orchid.infra.stringToNiceString
 import com.example.orchid.infra.wateringDaysAfter
 import com.example.orchid.infra.wateringDaysOfMonth
 import com.example.orchid.infra.wateringDaysWeek
@@ -82,9 +80,7 @@ fun TodayScreen (viewModel: PlantMarkedViewModel) {
                         .weight(1f)
                         .padding(16.dp)
                 ) {
-                    //val plants = listOf("Rose", "Tulip", "Palm")
                     items(plants) { plant ->
-                        Log.d("My", "plant " + plant.toString())
                         PlantItem(plant)
                         Spacer(modifier = Modifier.height(8.dp))
                     }
@@ -104,19 +100,15 @@ fun TodayScreen (viewModel: PlantMarkedViewModel) {
 @Composable
 fun PlantItem(plant : Plant) {
     val context = LocalContext.current
-    var date = plant.lastWateringDate
+    val date = plant.lastWateringDate
     var isToday = false
 
-    Log.d("Check", "date " + date)
-    Log.d("Check", "LocalDateToString(LocalDate.now()) " + LocalDateToString(LocalDate.now()))
 
-    if (date == LocalDateToString(LocalDate.now()))
+    if (date == localDateToString(LocalDate.now()))
     {
         isToday = true
-        Log.d("Check", "Thy are the same ")
     }
 
-    Log.d("Check", "isToday " + isToday)
 
     Row(
         modifier = Modifier
@@ -146,7 +138,7 @@ fun PlantItem(plant : Plant) {
                 color = Color.Black
             )
             Text(
-                text = StringToNiceString(date, context),
+                text = stringToNiceString(date, context),
                 fontSize = 14.sp,
                 color = Color.DarkGray
             )
@@ -158,7 +150,7 @@ fun PlantItem(plant : Plant) {
                 val db: AppDatabase = AppDatabase.getInstance(context)
                 val plantDao = db.PlantDao()
                 val wateringDao = db.WateringDao()
-                var plantToUpdate = plant
+                val plantToUpdate = plant
                 plantToUpdate.marked = 0
 
                 when (plant.plantType)
@@ -168,12 +160,12 @@ fun PlantItem(plant : Plant) {
                     2 -> plantToUpdate.lastWateringDate = wateringDaysOfMonth(plant.plantSubType.toString(), LocalDate.now().plusDays(1))
                 }
 
-                val stringDate: List<String> = LocalDateToString(LocalDate.now()).split(".")
+                val stringDate: List<String> = localDateToString(LocalDate.now()).split(".")
 
-                var wateringToAdd = Watering(
+                val wateringToAdd = Watering(
                     wID = 0,
                     wateringPlantID = plantToUpdate.plantID,
-                    wateringDate = LocalDateToString(LocalDate.now()),
+                    wateringDate = localDateToString(LocalDate.now()),
                     wateringDay = stringDate[0],
                     wateringMonth = stringDate[1],
                     wateringYear = stringDate[2]
@@ -182,8 +174,6 @@ fun PlantItem(plant : Plant) {
                 GlobalScope.launch {
                     plantDao.updatePlant(plantToUpdate)
                     wateringDao.insertAll(wateringToAdd)
-                    Log.d("getAll", "plantToUpdate " + plantToUpdate)
-                    Log.d("getAll", "wateringDao " + wateringDao.getAll())
                 }
 
 

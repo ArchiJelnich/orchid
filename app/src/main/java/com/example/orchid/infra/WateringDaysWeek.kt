@@ -10,9 +10,9 @@ import java.time.LocalDate
 fun wateringDaysWeek(plantSubType : String, localDate : LocalDate): String {
 
     if (plantSubType.isEmpty())
-    {
-        return ""
-    }
+        {
+            return ""
+        }
 
     val daysOfWeekArray: List<String> = plantSubType.split(",")
     val daysOfWeekInt: List<Int> = daysOfWeekArray.map { it.toInt() }
@@ -34,21 +34,17 @@ fun wateringDaysWeek(plantSubType : String, localDate : LocalDate): String {
         DayOfWeek.FRIDAY -> 4
         DayOfWeek.SATURDAY -> 5
         DayOfWeek.SUNDAY -> 6
-        else -> TODO("A new day was added to the week?")
+        else -> 0
     }
-
-
-
-
 
 
         for (i in todayDayOfWeek..6)
         {
             if (daysOfWeekInt.contains(i))
-            {
-                count = 1
-                break
-            }
+                {
+                    count = 1
+                    break
+                }
 
             today = today.plusDays(1)
 
@@ -59,16 +55,16 @@ fun wateringDaysWeek(plantSubType : String, localDate : LocalDate): String {
     for (i in 0..todayDayOfWeek)
     {
         if (daysOfWeekInt.contains(i))
-        {
-            count = 1
-            break
-        }
+            {
+                count = 1
+                break
+            }
 
         today = today.plusDays(1)
 
     }}
 
-    return LocalDateToString(today)
+    return localDateToString(today)
 
     }
 

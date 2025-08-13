@@ -3,15 +3,13 @@ package com.example.orchid
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.renderscript.ScriptGroup.Input
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import com.example.orchid.infra.InputChecker
+import com.example.orchid.infra.inputChecker
 import com.example.orchid.infra.flagGet
 import com.example.orchid.infra.flagPut
 import com.example.orchid.infra.localeChecker
@@ -35,10 +33,8 @@ class PlantEditActivity : ComponentActivity() {
         val db: AppDatabase = AppDatabase.getInstance(this)
         val plantDao = db.PlantDao()
         val plantPhotoDao = db.PlantPhotoDao()
-        var currentFlag = flagGet(this)
+        val currentFlag = flagGet(this)
 
-        Log.d("MyDebugPhotoChange", "onCreate : OnCreate")
-        Log.d("MyDebugPhotoChange", "onCreate : flag = " + currentFlag)
 
         var editedPlant = Plant(
             plantID = 0,
@@ -55,14 +51,10 @@ class PlantEditActivity : ComponentActivity() {
 
         if (currentFlag==102 || currentFlag==202) {
             val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-            var editedPlantID = preferences.getInt("edit_plant_id", 0)
+            val editedPlantID = preferences.getInt("edit_plant_id", 0)
             GlobalScope.launch {
                 editedPlant = plantDao.getByID(editedPlantID)
                 plantImageLink = plantPhotoDao.getByID(editedPlantID)
-                Log.d("MyDebugPhotoChange", "onCreate : edit_plant_id + " + editedPlantID.toString())
-                Log.d("MyDebugPhotoChange", "onCreate : plantPhotoDao.getByID(editedPlantID) + " + plantPhotoDao.getByID(editedPlantID).toString())
-                Log.d("MyDebugPhotoChange", "onCreate : plantPhotoDao.getAll + " + plantPhotoDao.getAll().toString())
-                Log.d("MyDebugPhotoChange", "onCreate : BREAKE POINT")
             }
         }
 
@@ -73,8 +65,6 @@ class PlantEditActivity : ComponentActivity() {
         setContent {
             OrchidTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    Log.d("MyDebug", "onCreate : editedPlant + " + editedPlant)
-                    Log.d("MyDebugPhotoChange", "onCreate : plantImageLink = " + plantImageLink)
                     PlantEditScreen(editedPlant,plantImageLink, currentFlag)
                 }
             }
@@ -82,14 +72,11 @@ class PlantEditActivity : ComponentActivity() {
     }
 
     override fun onResume() {
-        Log.d("MyDebugPhotoChange", "OnResume")
         super.onResume()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onPause() {
-        Log.d("MyDebugPhotoChange", "OnPause")
-        Log.d("MyDebugPhotoChange", "flag onPause = " + flagGet(this))
 
         if (flagGet(this)==100)
         {
@@ -110,12 +97,10 @@ class PlantEditActivity : ComponentActivity() {
                 2 -> lastWateringDate = wateringDaysOfMonth(plantSubType.toString(), LocalDate.now())
             }
 
-            Log.d("lastWateringDate", "lastWateringDate " + lastWateringDate)
-
 
             val PlantToCreate = Plant(
                 plantID = 0,
-                plantName = InputChecker(this, plantName.toString()),
+                plantName = inputChecker(this, plantName.toString()),
                 plantType = plantType,
                 plantSubType = plantSubType.toString(),
                 lastWateringDate = lastWateringDate,
@@ -123,20 +108,18 @@ class PlantEditActivity : ComponentActivity() {
                 deleteFlag = 0,
             )
 
-            Log.d("lastWateringDate", "PlantToCreate onPause = " + PlantToCreate)
 
             GlobalScope.launch {
 
                 val id: Long = plantDao.insertAll(PlantToCreate)[0]
 
-                val PlantPhotoToCreate = PlantPhoto(
+                val plantPhotoToCreate = PlantPhoto(
                     ppID = 0,
                     plantID = id.toInt(),
                     photo = plantPhoto.toString(),
                 )
 
-                Log.d("MyWeekDebug", "PlantPhotoToCreate onPause = " + PlantPhotoToCreate)
-                plantPhotoDao.insertAllPhoto(PlantPhotoToCreate)
+                plantPhotoDao.insertAllPhoto(plantPhotoToCreate)
 
 
             }
@@ -153,12 +136,8 @@ class PlantEditActivity : ComponentActivity() {
             val plantID = preferences.getInt("plantID", 0)
             val marked = preferences.getInt("marked", 0)
             var lastWateringDate = preferences.getString("lastWateringDate", "")
-            val plantPhoto = preferences.getString("plantPhoto", "")
             val db: AppDatabase = AppDatabase.getInstance(this)
             val plantDao = db.PlantDao()
-            val plantPhotoDao = db.PlantPhotoDao()
-
-            Log.d("lastWateringDate", "lastWateringDate " + lastWateringDate)
 
             if (marked != 1)
             {
@@ -170,9 +149,9 @@ class PlantEditActivity : ComponentActivity() {
                 }
             }
 
-            val PlantToUpdate = Plant(
+            val plantToUpdate = Plant(
                 plantID = plantID,
-                plantName = InputChecker(this, plantName.toString()),
+                plantName = inputChecker(this, plantName.toString()),
                 plantType = plantType,
                 plantSubType = plantSubType.toString(),
                 lastWateringDate = lastWateringDate.toString(),
@@ -181,22 +160,8 @@ class PlantEditActivity : ComponentActivity() {
             )
 
 
-
-
-
             GlobalScope.launch {
-
-                Log.d("lastWateringDate", "EditPlan : onPause // PlantToUpdate = " + PlantToUpdate)
-                plantDao.updatePlant(PlantToUpdate)
-
-                //val PlantPhotoToCreate = PlantPhoto(
-                //    ppID = 0,
-                //    plantID = id.toInt(),
-                //    photo = plantPhoto,
-                //)
-
-                //plantPhotoDao.insertAllPhoto(PlantPhotoToCreate)
-
+                plantDao.updatePlant(plantToUpdate)
             }
 
 

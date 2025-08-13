@@ -3,7 +3,6 @@ package com.example.orchid
 import android.icu.util.Calendar
 import android.os.Build
 import android.preference.PreferenceManager
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +36,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.orchid.infra.loadLanguage
-import com.example.orchid.infra.localeChecker
 import com.example.orchid.infra.saveLanguage
 import com.example.orchid.infra.setAppLocale
 import com.example.orchid.room.AppDatabase
@@ -53,7 +51,6 @@ fun SettingsScreen() {
 
     val preferences = PreferenceManager.getDefaultSharedPreferences(LocalContext.current)
     val settingNotificationFlag = preferences.getInt("setting_notification", 0)
-    Log.d("MyTime", "settingNotificationFlag" + settingNotificationFlag.toString())
     var statsThemeBool = false
 
     if (settingNotificationFlag==1)
@@ -141,11 +138,9 @@ fun SettingsScreen() {
 
                         if (isNotification){
                             preferences.edit().putInt("setting_notification", 1).apply()
-                            Log.d("MyTime", "Stage X " + preferences.getInt("setting_notification", 0))
                         }
                         else{
                             preferences.edit().putInt("setting_notification", 0).apply()
-                            Log.d("MyTime", "Stage Y " + preferences.getInt("setting_notification", 0))
                         }
 
 
@@ -210,8 +205,6 @@ fun ShowPicker(){
             .putInt("notification_hour", timePickerState.hour)
             .putInt("notification_minute", timePickerState.minute)
             .apply()
-        //Log.d("MyTime", timePickerState.hour.toString())
-        //Log.d("MyTime", timePickerState.minute.toString())
 
     }
 

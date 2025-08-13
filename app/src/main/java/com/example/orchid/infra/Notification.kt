@@ -11,34 +11,29 @@ import android.app.PendingIntent
 import android.os.Build
 import android.preference.PreferenceManager
 import androidx.annotation.RequiresApi
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat.getString
-import androidx.core.content.ContextCompat.getSystemService
-import com.example.orchid.infra.CheckToMark
+import com.example.orchid.infra.checkToMark
 import com.example.orchid.infra.localeChecker
 import com.example.orchid.room.AppDatabase
-import com.example.orchid.room.PlantDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-public class AlarmReceiver : BroadcastReceiver() {
+class AlarmReceiver : BroadcastReceiver() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context, intent: Intent?) {
         CoroutineScope(Dispatchers.IO).launch {
             localeChecker(context)
-            CheckToMark(context)
+            checkToMark(context)
 
 
             val db: AppDatabase = AppDatabase.getInstance(context)
             val plantDao = db.PlantDao()
-            var count = plantDao.getCount()
+            val count = plantDao.getCount()
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-            val NotificationFlag = preferences.getInt("setting_notification", 0)
-            if (NotificationFlag ==1 && count!=0) {
+            val notificationFlag = preferences.getInt("setting_notification", 0)
+            if (notificationFlag ==1 && count!=0) {
                 showNotification(context, context.getString(R.string.not_title) , context.getString(R.string.not_message))
             }
         }
