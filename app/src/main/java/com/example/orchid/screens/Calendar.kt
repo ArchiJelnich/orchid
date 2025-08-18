@@ -33,15 +33,18 @@ import com.example.orchid.R
 import com.example.orchid.room.AppDatabase
 import java.time.YearMonth
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.heightIn
 import com.example.orchid.CalendarViewModel
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import com.example.orchid.PlantViewModel
 import com.example.orchid.room.Plant
@@ -120,7 +123,8 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
 
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        horizontalArrangement = Arrangement.Center
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Button(onClick = { currentMonth = currentMonth.minusMonths(1)
                             selectedPlant = null
@@ -200,8 +204,11 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
                                             modifier = Modifier
                                                 .weight(1f)
                                                 .padding(4.dp)
-                                                .border(1.dp, Color.Black)
-                                                .heightIn(min = 75.dp)
+                                                .background(
+                                                    color = if (eventsToday.isNotEmpty()) colorResource(id = R.color.app_light_green)
+                                                    else colorResource(id = R.color.app_light_grey),
+                                                    shape = RoundedCornerShape(4.dp))
+                                                .heightIn(min = 70.dp)
                                                 .padding(8.dp),
                                             contentAlignment = Alignment.Center
                                         ) {
@@ -214,7 +221,10 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
                                                 ) {
                                                     eventsToday.forEach { event ->
 
-                                                            Text("•", fontSize = 24.sp, modifier = Modifier.padding(end = 2.dp))
+                                                            Text("•", fontSize = 24.sp, color = colorResource(id = R.color.app_green),
+                                                                modifier = Modifier
+                                                                    .padding(end = 2.dp)
+                                                                    )
 
                                                     }
                                                 }

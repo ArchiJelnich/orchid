@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -37,8 +38,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -120,14 +124,15 @@ fun TodayPlantItem(plant : Plant) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFDFFFD6))
+            .clip(RoundedCornerShape(12.dp))
+            .background(colorResource(id = R.color.app_light_green))
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
         Icon(
-            imageVector = Icons.Default.Person,
+            painter = painterResource(id = R.drawable.icon_flower),
             contentDescription = "Android Icon",
             tint = Color.Black,
             modifier = Modifier.size(40.dp)

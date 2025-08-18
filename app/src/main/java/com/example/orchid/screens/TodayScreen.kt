@@ -32,6 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -114,15 +116,15 @@ fun PlantItem(plant : Plant) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(if (isToday) Color(0xFFCBFAAE) else Color(0xFFF6DDC1))
+            .background(if (isToday) colorResource(id = R.color.app_light_green) else colorResource(id = R.color.app_orange))
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
         Icon(
-            imageVector = Icons.Default.Person,
-            contentDescription = "Android Icon",
+            painter = painterResource(id = R.drawable.icon_flower),
+            contentDescription = "Flower",
             tint = Color.Black,
             modifier = Modifier.size(40.dp)
         )

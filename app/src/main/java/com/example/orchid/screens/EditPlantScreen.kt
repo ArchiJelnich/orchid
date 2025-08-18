@@ -26,14 +26,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -52,6 +55,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -74,40 +78,102 @@ import kotlinx.coroutines.withContext
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun PlantEditScreen (editedPlant : Plant, plantImageLink: String, currentFlag : Int) {
 
-    MaterialTheme(
-    ){
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+@Composable
+fun PlantEditScreen(
+    editedPlant: Plant,
+    plantImageLink: String,
+    currentFlag: Int
+) {
+    val context = LocalContext.current
+    val defUri = plantImageLink.toUri()
+    var imageUri by remember { mutableStateOf<Uri?>(defUri) }
+    var croppedBitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? -> imageUri = uri }
+
+    LaunchedEffect(imageUri) {
+        imageUri?.let { uri ->
+            croppedBitmap = loadBitmapAndCropCenter(context, uri)
+        }
+    }
+
+    val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+    val editor = preferences.edit()
+    editor.apply()
+    preferences.edit().putInt("plantID", 0).apply()
+
+    var defPlantName = ""
+    var defPlantType = 0
+    var defPlantSubtype = ""
+
+    if (currentFlag == 102) {
+        defPlantName = editedPlant.plantName
+        defPlantType = editedPlant.plantType
+        defPlantSubtype = editedPlant.plantSubType
+        preferences.edit().putInt("plantID", editedPlant.plantID).apply()
+    }
+
+    var plantName by remember { mutableStateOf(defPlantName) }
+    var plantType by remember { mutableStateOf(defPlantType) }
+    var plantSubType by remember { mutableStateOf(defPlantSubtype) }
+
+    Scaffold(
+        bottomBar = {
+            Button(
+                onClick = {
+                    editor.apply()
+                    if (currentFlag != 102) flagPut(context, 100)
+
+                    preferences.edit().putString("plantName", plantName).apply()
+                    preferences.edit().putInt("plantType", plantType).apply()
+                    preferences.edit().putString("plantSubType", plantSubType).apply()
+                    preferences.edit().putString("plantPhoto", imageUri.toString()).apply()
+                    preferences.edit().putInt("marked", editedPlant.marked).apply()
+                    preferences.edit().putString("lastWateringDate", editedPlant.lastWateringDate).apply()
+
+                    if (flagGetExtra(context) == 202) {
+                        val db: AppDatabase = AppDatabase.getInstance(context)
+                        val plantPhotoDao = db.PlantPhotoDao()
+
+                        GlobalScope.launch {
+                            val plantPhotoToUpdate = plantPhotoDao.getIDByID(editedPlant.plantID)
+                            plantPhotoToUpdate.photo = imageUri.toString()
+                            plantPhotoDao.updatePlantPhoto(plantPhotoToUpdate)
+                        }
+                        flagPutExtra(context, 0)
+                    }
+
+                    val intent = Intent(context, MyPlantsActivity::class.java)
+                    context.startActivity(intent)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 56.dp, top = 16.dp)
+            ) {
+                Text(stringResource(R.string.common_add))
+            }
+        }
+    ) { innerPadding ->
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
 
-            val defUri = plantImageLink.toUri()
-            val context = LocalContext.current
-            var imageUri by remember { mutableStateOf<Uri?>(defUri) }
-            var croppedBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-            val imagePickerLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.GetContent()
-            ) { uri: Uri? ->
-                imageUri = uri
-            }
 
-            LaunchedEffect(imageUri) {
-                imageUri?.let { uri ->
-                    val bitmap = loadBitmapAndCropCenter(context, uri)
-                    croppedBitmap = bitmap
-                }
-            }
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Column(modifier = Modifier.fillMaxSize()) {
-
-                val imageModifier = Modifier
+            Box(
+                modifier = Modifier
                     .size(200.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color.LightGray)
+                    .align(Alignment.CenterHorizontally)
                     .clickable {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ||
                             ContextCompat.checkSelfPermission(
@@ -117,7 +183,6 @@ fun PlantEditScreen (editedPlant : Plant, plantImageLink: String, currentFlag : 
                         ) {
                             imagePickerLauncher.launch("image/*")
                             flagPutExtra(context, 202)
-
                         } else {
                             val activity = context as Activity
                             ActivityCompat.requestPermissions(
@@ -127,142 +192,63 @@ fun PlantEditScreen (editedPlant : Plant, plantImageLink: String, currentFlag : 
                             )
                             flagPutExtra(context, 202)
                         }
-
-
                     }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    if (croppedBitmap != null) {
-                        Image(
-                            bitmap = croppedBitmap!!.asImageBitmap(),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = imageModifier
-                        )
-                    } else {
-                        Image(
-                            painter = painterResource(id = R.drawable.icon_image),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = imageModifier
-                        )
-                    }
+            ) {
+                if (croppedBitmap != null) {
+                    Image(
+                        bitmap = croppedBitmap!!.asImageBitmap(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.icon_flower),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
-
-                var defPlantName=""
-                var defPlantType=0
-                var defPlantSubtype=""
-
-                val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-                val editor = preferences.edit()
-                editor.apply()
-                preferences.edit().putInt("plantID", 0).apply()
-
-                if (currentFlag==102)
-                {
-                    defPlantName=editedPlant.plantName
-                    defPlantType=editedPlant.plantType
-                    defPlantSubtype=editedPlant.plantSubType
-                    preferences.edit().putInt("plantID", editedPlant.plantID).apply()
-                }
+            }
 
 
+            Spacer(modifier = Modifier.height(16.dp))
 
-                var plantName by remember { mutableStateOf(defPlantName) }
-                var plantType by remember { mutableStateOf(defPlantType) }
-                var plantSubType by remember { mutableStateOf(defPlantSubtype) }
+            TextField(
+                value = plantName,
+                onValueChange = { plantName = it },
+                textStyle = MaterialTheme.typography.headlineLarge,
+                placeholder = {
+                    Text(
+                        text = stringResource(R.string.plant_name),
+                        style = MaterialTheme.typography.headlineLarge,
+                        textAlign = TextAlign.Center
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
 
+            Spacer(modifier = Modifier.height(16.dp))
 
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        TextField(
-                            value = plantName,
-                            onValueChange = { plantName = it },
-                            textStyle = MaterialTheme.typography.headlineLarge,
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(start = 40.dp),
-                            singleLine = true,
-                            placeholder = {
-                                Text(
-                                    text = stringResource(R.string.plant_name),
-                                    style = MaterialTheme.typography.headlineLarge,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        )
-                    }
-                }
-
-
-
-                SmartPicker(plantType = plantType,
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+            ) {
+                SmartPicker(
+                    plantType = plantType,
                     onPlantTypeSelected = { plantType = it },
                     plantSubType = plantSubType,
-                    onPlantSubTypeSelected = { plantSubType = it })
+                    onPlantSubTypeSelected = { plantSubType = it }
+                )
 
-                Button(
-                    onClick = {
-
-                        editor.apply()
-                        if (currentFlag!=102)
-                        {
-                            flagPut(context, 100)
-                        }
-
-
-                        //preferences.edit().putInt("plantID", plantID).apply()
-                        preferences.edit().putString("plantName", plantName).apply()
-                        preferences.edit().putInt("plantType", plantType).apply()
-                        preferences.edit().putString("plantSubType", plantSubType).apply()
-                        preferences.edit().putString("plantPhoto", imageUri.toString()).apply()
-                        preferences.edit().putInt("marked", editedPlant.marked).apply()
-                        preferences.edit().putString("lastWateringDate", editedPlant.lastWateringDate).apply()
-
-
-                        if (flagGetExtra(context)==202)
-                        {
-                            val db: AppDatabase = AppDatabase.getInstance(context)
-                            val plantPhotoDao = db.PlantPhotoDao()
-
-
-
-                            GlobalScope.launch {
-
-                                val plantPhotoToUpdate = plantPhotoDao.getIDByID(editedPlant.plantID)
-                                plantPhotoToUpdate.photo = imageUri.toString()
-                                plantPhotoDao.updatePlantPhoto(plantPhotoToUpdate)
-
-                            }
-
-                            flagPutExtra(context, 0)
-                        }
-
-                        val intent = Intent(context, MyPlantsActivity::class.java)
-                        context.startActivity(intent)
-
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(stringResource(R.string.common_add))
-                }
-
-
+                Spacer(modifier = Modifier.height(32.dp))
             }
-            }}
-
+        }
+    }
 }
 
 suspend fun loadBitmapAndCropCenter(context: Context, uri: Uri): Bitmap? = withContext(Dispatchers.IO) {
@@ -353,7 +339,8 @@ fun SmartPicker(plantType: Int,
 
             1 -> {
                 val days = context.resources.getStringArray(R.array.week_days)
-                Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(modifier = Modifier
+                    .fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     days.forEachIndexed { index, day ->
                         val selected = selectedWeekDays.contains(index)
                         Button(
@@ -363,7 +350,7 @@ fun SmartPicker(plantType: Int,
                                 onPlantSubTypeSelected(selectedWeekDays.joinToString(","))
                             },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (selected) Color.Green else Color.LightGray
+                                containerColor = if (selected) colorResource(id = R.color.app_green) else colorResource(id = R.color.app_grey)
                             ),
                             modifier = Modifier.fillMaxWidth()
                         ) {
@@ -385,16 +372,17 @@ fun SmartPicker(plantType: Int,
                     ) {
                         week.forEach { day ->
                             val selected = selectedMonthDays.contains(day)
-                            onPlantSubTypeSelected(selectedMonthDays.joinToString(","))
+
 
                             Box(
                                 modifier = Modifier
                                     .size(circleSize)
                                     .clip(CircleShape)
-                                    .background(if (selected) Color.Green else Color.LightGray)
+                                    .background(if (selected) colorResource(id = R.color.app_green) else colorResource(id = R.color.app_light_grey))
                                     .clickable {
                                         if (selected) selectedMonthDays.remove(day)
                                         else selectedMonthDays.add(day)
+                                        onPlantSubTypeSelected(selectedMonthDays.joinToString(","))
                                     },
                                 contentAlignment = Alignment.Center
                             ) {

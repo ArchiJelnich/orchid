@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.orchid.CalendarActivity
@@ -32,7 +33,7 @@ fun BottomPanel() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 50.dp)
-            .background(Color.Gray)
+            .background(colorResource(id = R.color.app_grey))
             .padding(vertical  = 20.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
