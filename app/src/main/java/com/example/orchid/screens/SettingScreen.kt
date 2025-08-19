@@ -261,6 +261,12 @@ fun DeleteAllWithDialog() {
                         wateringDao.deleteAll()
                         plantDao.deleteAll()
                         plantPhotoDao.deleteAll()
+                        val dir = context.filesDir
+                        dir.listFiles()?.forEach { file ->
+                            if (file.isFile) {
+                                file.delete()
+                            }
+                        }
                     }
 
 

@@ -82,6 +82,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 import java.time.LocalDate
 
 
@@ -98,13 +100,33 @@ fun PlantEditScreen(
     var imageUri by remember { mutableStateOf<Uri?>(defUri) }
     var croppedBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
+    Log.d("MyDebug", "defUri = " + defUri)
+    Log.d("MyDebug", "imageUri = " + imageUri)
+
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? -> imageUri = uri }
+    ) { uri: Uri? ->
+        uri?.let { pickedUri ->
+            GlobalScope.launch(Dispatchers.IO) {
+                val bitmap = loadBitmapAndCropCenter(context, pickedUri)
+                bitmap?.let {
+                    val file = File(context.filesDir, "plant_${editedPlant.plantID}.jpg")
+                    FileOutputStream(file).use { out ->
+                        it.compress(Bitmap.CompressFormat.JPEG, 90, out)
+                    }
+                    withContext(Dispatchers.Main) {
+                        croppedBitmap = it
+                        imageUri = file.toUri()
+                    }
+                }
+            }
+        }}
 
-    LaunchedEffect(imageUri) {
-        imageUri?.let { uri ->
-            croppedBitmap = loadBitmapAndCropCenter(context, uri)
+    LaunchedEffect(Unit) {
+        val file = File(context.filesDir, "plant_${editedPlant.plantID}.jpg")
+        if (file.exists()) {
+            imageUri = file.toUri()
+            croppedBitmap = loadBitmapAndCropCenter(context, imageUri!!) // suspend fun
         }
     }
 
@@ -233,6 +255,8 @@ fun PlantEditScreen(
                             }
                         },
                         onLongClick = {
+                            val file = File(context.filesDir, "plant_${editedPlant.plantID}.jpg")
+                            if (file.exists()) file.delete()
                             imageUri = null
                             croppedBitmap = null
                             flagPutExtra(context, 202)
