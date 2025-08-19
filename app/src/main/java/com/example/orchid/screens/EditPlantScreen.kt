@@ -10,12 +10,14 @@ import android.net.Uri
 import android.os.Build
 import android.preference.PreferenceManager
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -69,12 +71,18 @@ import com.example.orchid.R
 import com.example.orchid.infra.flagGetExtra
 import com.example.orchid.infra.flagPut
 import com.example.orchid.infra.flagPutExtra
+import com.example.orchid.infra.inputChecker
+import com.example.orchid.infra.wateringDaysAfter
+import com.example.orchid.infra.wateringDaysOfMonth
+import com.example.orchid.infra.wateringDaysWeek
 import com.example.orchid.room.AppDatabase
 import com.example.orchid.room.Plant
+import com.example.orchid.room.PlantPhoto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -137,12 +145,42 @@ fun PlantEditScreen(
                     if (flagGetExtra(context) == 202) {
                         val db: AppDatabase = AppDatabase.getInstance(context)
                         val plantPhotoDao = db.PlantPhotoDao()
+                        val plantDao = db.PlantDao()
+
+
 
                         GlobalScope.launch {
-                            val plantPhotoToUpdate = plantPhotoDao.getIDByID(editedPlant.plantID)
-                            plantPhotoToUpdate.photo = imageUri.toString()
-                            plantPhotoDao.updatePlantPhoto(plantPhotoToUpdate)
+                            val plantToUpdate = editedPlant.copy(
+                                plantName = inputChecker(context, plantName),
+                                plantType = plantType,
+                                plantSubType = plantSubType,
+                                lastWateringDate = if (editedPlant.marked != 1) {
+                                    when (plantType) {
+                                        0 -> wateringDaysAfter(plantSubType, LocalDate.now())
+                                        1 -> wateringDaysWeek(plantSubType, LocalDate.now())
+                                        2 -> wateringDaysOfMonth(plantSubType, LocalDate.now())
+                                        else -> editedPlant.lastWateringDate
+                                    }
+                                } else editedPlant.lastWateringDate,
+                                marked = editedPlant.marked
+                            )
+                            plantDao.updatePlant(plantToUpdate)
+
+                            if (imageUri != null) {
+                                val existingPhoto = plantPhotoDao.getIDByID(editedPlant.plantID)
+                                if (existingPhoto != null) {
+                                    existingPhoto.photo = imageUri.toString()
+                                    plantPhotoDao.updatePlantPhoto(existingPhoto)
+                                } else {
+                                    plantPhotoDao.insertAllPhoto(
+                                        PlantPhoto(0, editedPlant.plantID, imageUri.toString())
+                                    )
+                                }
+                            } else {
+                                plantPhotoDao.deleteByID(editedPlant.plantID)
+                            }
                         }
+
                         flagPutExtra(context, 0)
                     }
 
@@ -174,25 +212,32 @@ fun PlantEditScreen(
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color.LightGray)
                     .align(Alignment.CenterHorizontally)
-                    .clickable {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ||
-                            ContextCompat.checkSelfPermission(
-                                context,
-                                Manifest.permission.READ_EXTERNAL_STORAGE
-                            ) == PackageManager.PERMISSION_GRANTED
-                        ) {
-                            imagePickerLauncher.launch("image/*")
-                            flagPutExtra(context, 202)
-                        } else {
-                            val activity = context as Activity
-                            ActivityCompat.requestPermissions(
-                                activity,
-                                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                                200
-                            )
+                    .combinedClickable(
+                        onClick = {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ||
+                                ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                imagePickerLauncher.launch("image/*")
+                                flagPutExtra(context, 202)
+                            } else {
+                                val activity = context as Activity
+                                ActivityCompat.requestPermissions(
+                                    activity,
+                                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                                    200
+                                )
+                                flagPutExtra(context, 202)
+                            }
+                        },
+                        onLongClick = {
+                            imageUri = null
+                            croppedBitmap = null
                             flagPutExtra(context, 202)
                         }
-                    }
+                    )
             ) {
                 if (croppedBitmap != null) {
                     Image(

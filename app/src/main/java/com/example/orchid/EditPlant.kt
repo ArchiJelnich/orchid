@@ -3,6 +3,7 @@ package com.example.orchid
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -55,6 +56,13 @@ class PlantEditActivity : ComponentActivity() {
             GlobalScope.launch {
                 editedPlant = plantDao.getByID(editedPlantID)
                 plantImageLink = plantPhotoDao.getByID(editedPlantID)
+                Log.d("MyDebug", "plantImageLink = " + plantImageLink)
+                if (plantImageLink==null)
+                {
+                    plantImageLink=""
+                }
+                Log.d("MyDebug", "plantImageLink = " + plantImageLink)
+
             }
         }
 

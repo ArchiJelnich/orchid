@@ -63,4 +63,6 @@ interface PlantPhotoDao {
     fun getAll(): List<PlantPhoto>
     @Query("DELETE FROM PlantPhoto")
     fun deleteAll()
+    @Query("DELETE FROM PlantPhoto WHERE plantID=:plantID")
+    fun deleteByID(plantID: Int)
 }
