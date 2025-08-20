@@ -26,8 +26,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -39,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.orchid.PlantMarkedViewModel
 import com.example.orchid.R
 import com.example.orchid.infra.localDateToString
@@ -49,8 +54,10 @@ import com.example.orchid.infra.wateringDaysWeek
 import com.example.orchid.room.AppDatabase
 import com.example.orchid.room.Plant
 import com.example.orchid.room.Watering
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -111,6 +118,21 @@ fun PlantItem(plant : Plant) {
         isToday = true
     }
 
+    var imageUri by remember { mutableStateOf<String?>(null) }
+
+    val db: AppDatabase = AppDatabase.getInstance(context)
+    val plantPhotoDao = db.PlantPhotoDao()
+
+    LaunchedEffect(plant.plantID) {
+        withContext(Dispatchers.IO) {
+            val uri = plantPhotoDao.getByID(plant.plantID)
+            if (uri != null) {
+                withContext(Dispatchers.Main) {
+                    imageUri = uri.toString()
+                }
+            }
+        }
+    }
 
     Row(
         modifier = Modifier
@@ -122,11 +144,13 @@ fun PlantItem(plant : Plant) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
-        Icon(
-            painter = painterResource(id = R.drawable.icon_flower),
+        AsyncImage(
+            model = imageUri,
             contentDescription = "Flower",
-            tint = Color.Black,
+            placeholder = painterResource(R.drawable.icon_flower),
+            error = painterResource(R.drawable.icon_flower),
             modifier = Modifier.size(40.dp)
+                .clip(RoundedCornerShape(8.dp))
         )
 
         Column(

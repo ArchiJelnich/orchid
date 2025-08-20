@@ -1,5 +1,6 @@
 package com.example.orchid.screens
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.preference.PreferenceManager
@@ -32,6 +33,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,14 +50,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.orchid.PlantEditActivity
 import com.example.orchid.PlantViewModel
 import com.example.orchid.R
 import com.example.orchid.infra.flagPut
 import com.example.orchid.room.AppDatabase
 import com.example.orchid.room.Plant
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -117,10 +122,29 @@ fun MyPlantsScreen (viewModel: PlantViewModel) {
 }
 
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun TodayPlantItem(plant : Plant) {
 
     val context = LocalContext.current
+    var imageUri by remember { mutableStateOf<String?>(null) }
+
+    val db: AppDatabase = AppDatabase.getInstance(context)
+    val plantPhotoDao = db.PlantPhotoDao()
+
+    LaunchedEffect(plant.plantID) {
+        withContext(Dispatchers.IO) {
+            val uri = plantPhotoDao.getByID(plant.plantID)
+            if (uri != null) {
+                withContext(Dispatchers.Main) {
+                    imageUri = uri.toString()
+                }
+            }
+        }
+    }
+
+
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -131,11 +155,13 @@ fun TodayPlantItem(plant : Plant) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
-        Icon(
-            painter = painterResource(id = R.drawable.icon_flower),
-            contentDescription = "Android Icon",
-            tint = Color.Black,
+        AsyncImage(
+            model = imageUri,
+            contentDescription = "Flower",
+            placeholder = painterResource(R.drawable.icon_flower),
+            error = painterResource(R.drawable.icon_flower),
             modifier = Modifier.size(40.dp)
+                .clip(RoundedCornerShape(8.dp))
         )
 
 
