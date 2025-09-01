@@ -1,8 +1,12 @@
 package com.example.orchid
 
+import android.app.AlarmManager
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -35,6 +39,17 @@ class SettingActivity : ComponentActivity() {
 
 
 
-        AlarmHelper.setDailyAlarm(this, notificationHour, notificationMinute)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = getSystemService(AlarmManager::class.java)
+            if (alarmManager.canScheduleExactAlarms()) {
+                AlarmHelper.setDailyAlarm(this, 9, 0)
+            } else {
+                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                intent.data = Uri.parse("package:$packageName")
+                startActivity(intent)
+            }
+        } else {
+            AlarmHelper.setDailyAlarm(this, notificationHour, notificationMinute)
+        }
     }
 }

@@ -48,6 +48,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
@@ -97,7 +98,7 @@ fun PlantEditScreen(
 ) {
     val context = LocalContext.current
     val defUri = plantImageLink.toUri()
-    var imageUri by remember { mutableStateOf<Uri?>(defUri) }
+    var imageUri by remember   { mutableStateOf<Uri?>(defUri) }
     var croppedBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
     Log.d("MyDebug", "defUri = " + defUri)
@@ -146,9 +147,9 @@ fun PlantEditScreen(
         preferences.edit().putInt("plantID", editedPlant.plantID).apply()
     }
 
-    var plantName by remember { mutableStateOf(defPlantName) }
-    var plantType by remember { mutableStateOf(defPlantType) }
-    var plantSubType by remember { mutableStateOf(defPlantSubtype) }
+    var plantName by rememberSaveable  { mutableStateOf(defPlantName) }
+    var plantType by rememberSaveable  { mutableStateOf(defPlantType) }
+    var plantSubType by rememberSaveable  { mutableStateOf(defPlantSubtype) }
 
     Scaffold(
         bottomBar = {
